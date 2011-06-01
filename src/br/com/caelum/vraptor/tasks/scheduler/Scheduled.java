@@ -1,0 +1,16 @@
+package br.com.caelum.vraptor.tasks.scheduler;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import br.com.caelum.vraptor.ioc.Stereotype;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Stereotype
+public @interface Scheduled {
+	String value() default "";
+	int fixedRate() default 0;
+}
