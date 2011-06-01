@@ -29,48 +29,45 @@ public class TaskHandler {
 		this.scheduler = scheduler;
 		this.tasks = tasks;
 	}
-	
+
 	@PostConstruct
-	public void setup(){
-		for(Task task : tasks){
+	public void setup() {
+		for (Task task : tasks) {
 			handle(task);
 		}
 	}
 
 	public void handle(Task task) {
-		
-			try {
-				
-				Trigger trigger = getTriggerExpression(task.getClass());
-					
-				scheduler.schedule(task, trigger);
 
-			} catch (ParseException e) {
-				throw new RuntimeException(e);
-			}
-		
-	}
-	
-	
-	private Trigger getTriggerExpression(Class<? extends Task> resource) throws ParseException{
-		
-		String expression = resource.getAnnotation(Scheduled.class).value();
-		
-		if(!expression.isEmpty()){
-			return newTrigger()
-						.withIdentity("trigger" + id.incrementAndGet())
-						.withSchedule(cronSchedule(expression))
-						.build();
+		try {
+
+			Trigger trigger = getTriggerExpression(task.getClass());
+			scheduler.schedule(task, trigger);
+
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
 		}
-		
-		int interval = resource.getAnnotation(Scheduled.class).fixedRate();
-		
-		return newTrigger()
-					.withIdentity("trigger" + id.incrementAndGet())
-					.withSchedule(simpleSchedule()
-					.withIntervalInMilliseconds(interval).repeatForever())
-					.build();		
+
 	}
 
+	private Trigger getTriggerExpression(Class<? extends Task> resource)
+			throws ParseException {
+
+		String expression = resource.getAnnotation(Scheduled.class).value();
+
+		if (!expression.isEmpty()) {
+			return newTrigger().withIdentity("trigger" + id.incrementAndGet())
+							   .withSchedule(cronSchedule(expression))
+							   .build();
+		}
+
+		int interval = resource.getAnnotation(Scheduled.class).fixedRate();
+
+		return newTrigger()
+				.withIdentity("trigger" + id.incrementAndGet())
+				.withSchedule(simpleSchedule().withIntervalInMilliseconds(interval)
+				.repeatForever())
+				.build();
+	}
 
 }

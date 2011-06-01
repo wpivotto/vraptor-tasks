@@ -24,16 +24,16 @@ public class DefaultJobFactory implements JobFactory {
 
 	@Override
 	public Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) throws SchedulerException {
-		
+
 		JobDetail detail = bundle.getJobDetail();
-		
-		for(JobProvider provider : providers){
-			if(provider.canProvide(detail.getJobClass()))
+
+		for (JobProvider provider : providers) {
+			if (provider.canProvide(detail.getJobClass()))
 				return provider.newJob(detail);
 		}
-		
-		throw new IllegalArgumentException("Can´t provide job " + detail.getKey());
-		
+
+		throw new IllegalArgumentException("Cannot provide job " + detail.getKey());
+
 	}
 
 }

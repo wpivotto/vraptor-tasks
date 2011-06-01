@@ -13,7 +13,6 @@ import br.com.caelum.vraptor.tasks.Task;
 @ApplicationScoped
 public class DefaultJobProvider implements JobProvider {
 
-
 	public Job newJob(JobDetail jobDetail) {
 		Task task = newTask(jobDetail.getKey().getName());
 		return new DefaultJob(task);

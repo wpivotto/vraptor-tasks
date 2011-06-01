@@ -31,9 +31,7 @@ public class QuartzTaskScheduler implements TaskScheduler {
 
 	public void schedule(Task task, Trigger trigger) {
 
-		JobDetail detail = newJob(getJobClass(task))
-							.withIdentity(task.getClass().getName())
-							.build();
+		JobDetail detail = newJob(getJobClass(task)).withIdentity(task.getClass().getName()).build();
 
 		try {
 
@@ -46,19 +44,16 @@ public class QuartzTaskScheduler implements TaskScheduler {
 
 	}
 
-	private Class<? extends Job> getJobClass(Task task){
-		return TransactionalTask.class.isAssignableFrom(task.getClass()) 
-				? TransactionalJob.class : DefaultJob.class; 
+	private Class<? extends Job> getJobClass(Task task) {
+		return TransactionalTask.class.isAssignableFrom(task.getClass()) ? TransactionalJob.class : DefaultJob.class;
 	}
 
 	@Override
 	public void unschedule(Task task) throws SchedulerException {
 		JobKey key = new JobKey(task.getClass().getName());
-		if(quartz.checkExists(key))
+		if (quartz.checkExists(key))
 			quartz.deleteJob(key);
-		
-	}
 
-	
+	}
 
 }

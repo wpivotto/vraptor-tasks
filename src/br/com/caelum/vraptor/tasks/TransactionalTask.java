@@ -5,5 +5,5 @@ import org.hibernate.classic.Session;
 public interface TransactionalTask extends Task {
 
 	void setup(Session session);
-	
+
 }

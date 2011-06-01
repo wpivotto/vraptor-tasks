@@ -24,19 +24,16 @@ public class TransactionalJob implements Job {
 		Transaction transaction = null;
 
 		try {
-			
 			transaction = session.beginTransaction();
 			task.setup(session);
 			task.execute();
 			transaction.commit();
-		} 
-
+		}
 		finally {
 			if (transaction != null && transaction.isActive()) {
-				transaction.rollback(); 
-			} 
+				transaction.rollback();
+			}
 			session.close();
 		}
 	}
-
 }

@@ -39,7 +39,7 @@ public class SchedulerCreator implements ComponentFactory<Scheduler> {
 		return scheduler;
 	}
 
-	@PostConstruct   
+	@PostConstruct
 	public void start() {
 		try {
 			this.scheduler.start();
@@ -55,7 +55,7 @@ public class SchedulerCreator implements ComponentFactory<Scheduler> {
 		} catch (SchedulerException e) {
 			logger.debug("ERROR", e);
 		}
-		
+
 	}
 
 }

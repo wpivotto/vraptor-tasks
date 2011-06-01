@@ -8,7 +8,6 @@ import br.com.caelum.vraptor.tasks.Task;
 public interface TaskScheduler {
 
 	void schedule(Task task, Trigger trigger);
-	
 	void unschedule(Task task) throws SchedulerException;
 
 }
