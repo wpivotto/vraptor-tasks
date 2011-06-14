@@ -5,6 +5,7 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,7 +34,8 @@ public class TaskHandler {
 	@PostConstruct
 	public void setup() {
 		for (Task task : tasks) {
-			handle(task);
+			if(task.getClass().isAnnotationPresent(Scheduled.class))
+				handle(task);
 		}
 	}
 
@@ -50,10 +52,11 @@ public class TaskHandler {
 
 	}
 
-	private Trigger getTriggerExpression(Class<? extends Task> resource)
-			throws ParseException {
+	private Trigger getTriggerExpression(Class<? extends Task> resource) throws ParseException {
 
-		String expression = resource.getAnnotation(Scheduled.class).value();
+		Scheduled params = resource.getAnnotation(Scheduled.class);
+		
+		String expression = params.value();
 
 		if (!expression.isEmpty()) {
 			return newTrigger().withIdentity("trigger" + id.incrementAndGet())
@@ -61,10 +64,13 @@ public class TaskHandler {
 							   .build();
 		}
 
-		int interval = resource.getAnnotation(Scheduled.class).fixedRate();
-
+		int interval = params.fixedRate();
+		int delay = params.initialDelay();
+		Date startTime = new Date(System.currentTimeMillis() + delay);
+		
 		return newTrigger()
 				.withIdentity("trigger" + id.incrementAndGet())
+				.startAt(startTime)
 				.withSchedule(simpleSchedule().withIntervalInMilliseconds(interval)
 				.repeatForever())
 				.build();

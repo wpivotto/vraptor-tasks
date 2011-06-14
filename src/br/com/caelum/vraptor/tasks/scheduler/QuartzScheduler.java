@@ -20,12 +20,12 @@ import br.com.caelum.vraptor.tasks.jobs.TransactionalJob;
 
 @Component
 @ApplicationScoped
-public class QuartzTaskScheduler implements TaskScheduler {
+public class QuartzScheduler implements TaskScheduler {
 
-	protected static Logger logger = LoggerFactory.getLogger(QuartzTaskScheduler.class);
+	protected static Logger logger = LoggerFactory.getLogger(QuartzScheduler.class);
 	protected Scheduler quartz;
 
-	public QuartzTaskScheduler(Scheduler quartz) {
+	public QuartzScheduler(Scheduler quartz) {
 		this.quartz = quartz;
 	}
 

@@ -6,6 +6,7 @@ import javax.annotation.PreDestroy;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.spi.JobFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,6 @@ import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.ComponentFactory;
 import br.com.caelum.vraptor.tasks.TaskLogger;
-import br.com.caelum.vraptor.tasks.jobs.DefaultJobFactory;
 
 @Component
 @ApplicationScoped
@@ -22,7 +22,7 @@ public class SchedulerCreator implements ComponentFactory<Scheduler> {
 	private static Logger logger = LoggerFactory.getLogger(SchedulerCreator.class);
 	private final Scheduler scheduler;
 
-	public SchedulerCreator(DefaultJobFactory factory) {
+	public SchedulerCreator(JobFactory factory) {
 
 		try {
 			this.scheduler = new StdSchedulerFactory().getScheduler();

@@ -13,4 +13,5 @@ import br.com.caelum.vraptor.ioc.Stereotype;
 public @interface Scheduled {
 	String value() default "";
 	int fixedRate() default 0;
+	int initialDelay() default 0;
 }
