@@ -11,7 +11,7 @@ import br.com.caelum.vraptor.ioc.Stereotype;
 @Target(ElementType.TYPE)
 @Stereotype
 public @interface Scheduled {
-	String value() default "";
+	String cron() default "";
 	int fixedRate() default 0;
 	int initialDelay() default 0;
 }

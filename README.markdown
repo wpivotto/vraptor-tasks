@@ -8,7 +8,7 @@ Tarefa Simples
 --------
 
 	@PrototypeScoped
-	@Scheduled("* * 0/12 * * ?")
+	@Scheduled(cron = "* * 0/12 * * ?")
 	public class Backup implements Task {
 
 		private Database database = new Database();
@@ -25,7 +25,7 @@ Tarefa com controle transacional
 --------
 
 	@PrototypeScoped
-	@Scheduled(fixedRate = 5000)
+	@Scheduled(fixedRate = 5000, initialDelay = 3000)
 	public class DatabaseFiller implements TransactionalTask {
 
 		private Database database;
@@ -39,6 +39,19 @@ Tarefa com controle transacional
 		//setup DAOs, Repositories...
 		public void setup(Session session) {
 			database = new Database(session);
+		}
+	}
+	
+Agendamento manual
+--------
+	@Component
+	@ApplicationScoped
+	public class CustomScheduler {
+
+		public CustomScheduler(TaskScheduler scheduler, List<Task> tasks){
+			for(Task task : tasks){
+				scheduler.schedule(task, custom trigger);
+			}
 		}
 	}
 	

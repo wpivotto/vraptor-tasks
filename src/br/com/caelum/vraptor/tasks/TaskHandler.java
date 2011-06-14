@@ -56,17 +56,18 @@ public class TaskHandler {
 
 		Scheduled params = resource.getAnnotation(Scheduled.class);
 		
-		String expression = params.value();
+		String expression = params.cron();
+		int delay = params.initialDelay();
+		Date startTime = new Date(System.currentTimeMillis() + delay);
 
 		if (!expression.isEmpty()) {
 			return newTrigger().withIdentity("trigger" + id.incrementAndGet())
 							   .withSchedule(cronSchedule(expression))
+							   .startAt(startTime)
 							   .build();
 		}
 
 		int interval = params.fixedRate();
-		int delay = params.initialDelay();
-		Date startTime = new Date(System.currentTimeMillis() + delay);
 		
 		return newTrigger()
 				.withIdentity("trigger" + id.incrementAndGet())
