@@ -17,17 +17,25 @@ public class TaskLogger implements JobListener {
 
 	@Override
 	public void jobExecutionVetoed(JobExecutionContext context) {
-		logger.debug("Task Execution was vetoed");
+		logger.debug("Task " + taskName(context) + " was vetoed");
 	}
 
 	@Override
 	public void jobToBeExecuted(JobExecutionContext context) {
-		logger.debug("Executing Task " + context.getJobDetail().getKey().getName());
+		logger.debug("Executing Task " + taskName(context));
 	}
 
 	@Override
 	public void jobWasExecuted(JobExecutionContext context, JobExecutionException exception) {
-		logger.debug("Task " + context.getJobDetail().getKey().getName() + " was executed");
+		
+		logger.debug("Task " + taskName(context) + " was executed");
+		
+		if(exception != null)
+			logger.debug("Task " + taskName(context) + " failed", exception);
+		
 	}
 
+	private String taskName(JobExecutionContext context){
+		return context.getJobDetail().getKey().getName();
+	}
 }
