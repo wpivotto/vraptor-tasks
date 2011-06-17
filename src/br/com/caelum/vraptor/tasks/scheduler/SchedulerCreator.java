@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.ComponentFactory;
-import br.com.caelum.vraptor.tasks.TaskLogger;
+import br.com.caelum.vraptor.tasks.TaskMonitor;
 
 @Component
 @ApplicationScoped
@@ -22,12 +22,12 @@ public class SchedulerCreator implements ComponentFactory<Scheduler> {
 	private static Logger logger = LoggerFactory.getLogger(SchedulerCreator.class);
 	private final Scheduler scheduler;
 
-	public SchedulerCreator(JobFactory factory) {
+	public SchedulerCreator(JobFactory factory, TaskMonitor monitor) {
 
 		try {
 			this.scheduler = new StdSchedulerFactory().getScheduler();
 			this.scheduler.setJobFactory(factory);
-			this.scheduler.getListenerManager().addJobListener(new TaskLogger());
+			this.scheduler.getListenerManager().addJobListener(monitor);
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
 		}
