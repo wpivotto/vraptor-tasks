@@ -44,6 +44,10 @@ Tarefa com controle transacional
 	
 Agendamento manual
 --------
+	
+	Remova a anotação @Scheduled das Tasks
+	Crie o seguinte componente:
+	
 	@Component
 	@ApplicationScoped
 	public class CustomScheduler {
@@ -55,3 +59,15 @@ Agendamento manual
 		}
 	}
 	
+Monitorando Tasks
+--------
+	
+	@Resource
+	public class TasksController {
+
+		public TasksController(TasksMonitor monitor){
+			TaskStatistics stats = monitor.getStatisticsFor(MyTask.class);
+			log.info("Next Fire Time " + stats.getNextFireTime());
+			...
+		}
+	}

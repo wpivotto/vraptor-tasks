@@ -15,9 +15,9 @@ import br.com.caelum.vraptor.ioc.Component;
 
 @Component
 @ApplicationScoped
-public class TaskMonitor implements JobListener {
+public class TasksMonitor implements JobListener {
 
-	private static Logger logger = LoggerFactory.getLogger(TaskMonitor.class);
+	private static Logger logger = LoggerFactory.getLogger(TasksMonitor.class);
 	private Map<String, TaskStatistics> statistics = new HashMap<String, TaskStatistics>();
 
 	@Override
@@ -61,7 +61,11 @@ public class TaskMonitor implements JobListener {
 	}
 
 	public TaskStatistics getStatisticsFor(Task task){
-		return statistics.get(task.getClass().getName());
+		return getStatisticsFor(task.getClass().getName());
+	}
+	
+	public TaskStatistics getStatisticsFor(Class<? extends Task> clazz){
+		return getStatisticsFor(clazz.getName());
 	}
 
 	public Collection<TaskStatistics> getStatistics(){
