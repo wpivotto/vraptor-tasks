@@ -18,6 +18,7 @@ public class TaskStatistics {
 	private long executionCount;
 	private int refireCount;
 	private int failCount;
+	private Throwable lastException;
 	
 	public TaskStatistics(String taskName) {
 		this.taskName = taskName;
@@ -67,6 +68,10 @@ public class TaskStatistics {
 		return failCount;
 	}
 	
+	public Throwable getLastException() {
+		return lastException;
+	}
+
 	public void update(JobExecutionContext context) {
 		
 		this.fireTime = context.getFireTime();
@@ -85,8 +90,9 @@ public class TaskStatistics {
 		
 	}
 
-	public void increaseFailCount() {
+	public void increaseFailCount(Throwable exception) {
 		this.failCount++;
+		this.lastException = exception;
 	}
 
 }

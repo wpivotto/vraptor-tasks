@@ -44,7 +44,7 @@ public class TasksMonitor implements JobListener {
 		stats.update(context);
 
 		if(exception != null){
-			stats.increaseFailCount();
+			stats.increaseFailCount(exception);
 			logger.debug("Task " + taskName(context) + " failed", exception);
 		}
 
