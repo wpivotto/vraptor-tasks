@@ -20,10 +20,6 @@ public class JPAJobProvider implements JobProvider {
 		return new JPAJob(task, factory.createEntityManager());
 	}
 
-	public boolean canProvide(Class<? extends Job> job) {
-		return job.equals(JPAJob.class);
-	}
-
 	private TransactionalTask newTask(String className) {
 		try {
 			return (TransactionalTask) Class.forName(className).getDeclaredConstructor().newInstance();

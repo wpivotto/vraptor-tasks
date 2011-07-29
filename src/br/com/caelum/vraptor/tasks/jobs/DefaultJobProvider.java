@@ -16,10 +16,6 @@ public class DefaultJobProvider implements JobProvider {
 		return new DefaultJob(task);
 	}
 
-	public boolean canProvide(Class<? extends Job> job) {
-		return job.equals(DefaultJob.class);
-	}
-
 	private Task newTask(String className) {
 		try {
 			return (Task) Class.forName(className).getDeclaredConstructor().newInstance();

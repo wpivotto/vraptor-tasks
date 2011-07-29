@@ -19,10 +19,6 @@ public class HibernateJobProvider implements JobProvider {
 		return new HibernateJob(task, factory.openSession());
 	}
 
-	public boolean canProvide(Class<? extends Job> job) {
-		return job.equals(HibernateJob.class);
-	}
-
 	private TransactionalTask newTask(String className) {
 		try {
 			return (TransactionalTask) Class.forName(className).getDeclaredConstructor().newInstance();
