@@ -3,7 +3,15 @@ Tasks
 
 Plug-in da biblioteca de agendamento de tarefas Quartz, para Vraptor
 
+Intalacao
+--------
+Adicione ao seu web.xml
 
+	<context-param>
+        	<param-name>br.com.caelum.vraptor.packages</param-name>
+	        <param-value>br.com.caelum.vraptor.tasks</param-value>
+    </context-param>
+    
 Tarefa Simples
 --------
 
