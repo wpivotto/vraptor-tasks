@@ -17,25 +17,21 @@ import br.com.caelum.vraptor.ioc.Component;
 @ApplicationScoped
 public class TasksMonitor implements JobListener {
 
-	private static Logger logger = LoggerFactory.getLogger(TasksMonitor.class);
+	private Logger logger = LoggerFactory.getLogger(TasksMonitor.class);
 	private Map<String, TaskStatistics> statistics = new HashMap<String, TaskStatistics>();
 
-	@Override
 	public String getName() {
 		return getClass().getName();
 	}
 
-	@Override
 	public void jobExecutionVetoed(JobExecutionContext context) {
 		logger.debug("Task " + taskName(context) + " was vetoed");
 	}
 
-	@Override
 	public void jobToBeExecuted(JobExecutionContext context) {
 		logger.debug("Executing Task " + taskName(context));
 	}
 
-	@Override
 	public void jobWasExecuted(JobExecutionContext context, JobExecutionException exception) {
 
 		logger.debug("Task " + taskName(context) + " was executed");

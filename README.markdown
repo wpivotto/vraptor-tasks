@@ -21,9 +21,11 @@ Tarefa Simples
 	}
 
 
-Tarefa com controle transacional
+Tarefa com controle transacional (Hibernate)
 --------
 
+	import br.com.caelum.vraptor.tasks.jobs.hibernate.TransactionalTask;
+	
 	@PrototypeScoped
 	@Scheduled(fixedRate = 5000, initialDelay = 3000)
 	public class DatabaseFiller implements TransactionalTask {
@@ -38,14 +40,37 @@ Tarefa com controle transacional
 		@Override
 		//setup DAOs, Repositories...
 		public void setup(Session session) {
-			database = new Database(session);
+			database = new HibernateDatabase(session);
+		}
+	}
+	
+Tarefa com controle transacional (JPA)
+--------
+
+	import br.com.caelum.vraptor.tasks.jobs.jpa.TransactionalTask;
+	
+	@PrototypeScoped
+	@Scheduled(fixedRate = 5000, initialDelay = 3000)
+	public class DatabaseFiller implements TransactionalTask {
+
+		private Database database;
+
+		@Override
+		public void execute() {
+			database.add(new RandomRecord());
+		}
+
+		@Override
+		//setup DAOs, Repositories...
+		public void setup(EntityManager manager) {
+			database = new JPADatabase(manager);
 		}
 	}
 	
 Agendamento manual
 --------
 	
-	Remova a anotação @Scheduled das Tasks
+	Remova a anotacao @Scheduled das Tasks
 	Crie o seguinte componente:
 	
 	@Component

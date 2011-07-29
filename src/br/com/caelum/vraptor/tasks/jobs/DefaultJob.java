@@ -14,7 +14,6 @@ public class DefaultJob implements Job {
 		this.task = task;
 	}
 
-	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		task.execute();
 	}

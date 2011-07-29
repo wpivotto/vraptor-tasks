@@ -34,7 +34,6 @@ public class SchedulerCreator implements ComponentFactory<Scheduler> {
 
 	}
 
-	@Override
 	public Scheduler getInstance() {
 		return scheduler;
 	}

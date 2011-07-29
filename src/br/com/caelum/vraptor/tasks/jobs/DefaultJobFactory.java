@@ -1,7 +1,5 @@
 package br.com.caelum.vraptor.tasks.jobs;
 
-import java.util.List;
-
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -16,23 +14,17 @@ import br.com.caelum.vraptor.ioc.Component;
 @ApplicationScoped
 public class DefaultJobFactory implements JobFactory {
 
-	private final List<JobProvider> providers;
+	private final JobProviders providers;
 
-	public DefaultJobFactory(List<JobProvider> providers) {
+	public DefaultJobFactory(JobProviders providers) {
 		this.providers = providers;
 	}
 
-	@Override
 	public Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) throws SchedulerException {
 
 		JobDetail detail = bundle.getJobDetail();
-
-		for (JobProvider provider : providers) {
-			if (provider.canProvide(detail.getJobClass()))
-				return provider.newJob(detail);
-		}
-
-		throw new IllegalArgumentException("Cannot provide job " + detail.getKey());
+		JobProvider provider = providers.getProvider(detail.getJobClass());
+		return provider.newJob(detail);
 
 	}
 

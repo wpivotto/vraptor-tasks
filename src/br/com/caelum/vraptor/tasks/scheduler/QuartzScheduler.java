@@ -14,9 +14,10 @@ import org.slf4j.LoggerFactory;
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.Task;
-import br.com.caelum.vraptor.tasks.TransactionalTask;
 import br.com.caelum.vraptor.tasks.jobs.DefaultJob;
-import br.com.caelum.vraptor.tasks.jobs.TransactionalJob;
+import br.com.caelum.vraptor.tasks.jobs.hibernate.HibernateJob;
+import br.com.caelum.vraptor.tasks.jobs.jpa.JPAJob;
+
 
 @Component
 @ApplicationScoped
@@ -45,10 +46,13 @@ public class QuartzScheduler implements TaskScheduler {
 	}
 
 	private Class<? extends Job> getJobClass(Task task) {
-		return TransactionalTask.class.isAssignableFrom(task.getClass()) ? TransactionalJob.class : DefaultJob.class;
+		if (br.com.caelum.vraptor.tasks.jobs.hibernate.TransactionalTask.class.isAssignableFrom(task.getClass())) 
+				return HibernateJob.class;
+		if (br.com.caelum.vraptor.tasks.jobs.jpa.TransactionalTask.class.isAssignableFrom(task.getClass())) 
+			return JPAJob.class;
+		return DefaultJob.class;
 	}
 
-	@Override
 	public void unschedule(Task task) throws SchedulerException {
 		JobKey key = new JobKey(task.getClass().getName());
 		if (quartz.checkExists(key))

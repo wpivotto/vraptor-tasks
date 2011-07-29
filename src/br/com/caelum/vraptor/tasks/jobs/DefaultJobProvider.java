@@ -1,7 +1,5 @@
 package br.com.caelum.vraptor.tasks.jobs;
 
-import net.vidageek.mirror.dsl.Mirror;
-
 import org.quartz.Job;
 import org.quartz.JobDetail;
 
@@ -18,16 +16,14 @@ public class DefaultJobProvider implements JobProvider {
 		return new DefaultJob(task);
 	}
 
-	@Override
 	public boolean canProvide(Class<? extends Job> job) {
 		return job.equals(DefaultJob.class);
 	}
 
 	private Task newTask(String className) {
 		try {
-			Class<?> clazz = Class.forName(className);
-			return (Task) new Mirror().on(clazz).invoke().constructor().withoutArgs();
-		} catch (ClassNotFoundException e) {
+			return (Task) Class.forName(className).getDeclaredConstructor().newInstance();
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
