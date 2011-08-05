@@ -5,18 +5,21 @@ import org.quartz.Job;
 import org.quartz.JobDetail;
 
 import br.com.caelum.vraptor.tasks.jobs.JobProvider;
+import br.com.caelum.vraptor.tasks.validator.TaskValidator;
 
 public class HibernateJobProvider implements JobProvider {
 
 	private final SessionFactory factory;
+	private final TaskValidator validator;
 
-	public HibernateJobProvider(SessionFactory factory) {
+	public HibernateJobProvider(SessionFactory factory, TaskValidator validator) {
 		this.factory = factory;
+		this.validator = validator;
 	}
 
 	public Job newJob(JobDetail jobDetail) {
 		TransactionalTask task = newTask(jobDetail.getKey().getName());
-		return new HibernateJob(task, factory.openSession());
+		return new HibernateJob(task, validator, factory.openSession());
 	}
 
 	private TransactionalTask newTask(String className) {
