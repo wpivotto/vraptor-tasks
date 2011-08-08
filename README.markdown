@@ -3,7 +3,7 @@ Tasks
 
 Plug-in da biblioteca de agendamento de tarefas Quartz, para Vraptor
 
-Instalação
+Instalação 
 --------
 Adicione ao seu web.xml
 
