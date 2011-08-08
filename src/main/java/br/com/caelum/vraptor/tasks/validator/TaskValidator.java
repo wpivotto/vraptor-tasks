@@ -14,36 +14,36 @@ import br.com.caelum.vraptor.validator.Validations;
 
 public class TaskValidator {
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskValidator.class);
+	private static final Logger logger = LoggerFactory.getLogger(TaskValidator.class);
 
 	private final List<Message> errors = new ArrayList<Message>();
 
 	private final BeanValidator beanValidator;
 
-    public TaskValidator(BeanValidator beanValidator) {
+	public TaskValidator(BeanValidator beanValidator) {
 		this.beanValidator = beanValidator;
-    }
+	}
 
-    public void checking(Validations validations) {
-        addAll(validations.getErrors());
-    }
+	public void checking(Validations validations) {
+		addAll(validations.getErrors());
+	}
 
-    public void validate(Object object) {
-        if (beanValidator == null)
-            logger.warn("has no validators registered");
-        else 
-            addAll(beanValidator.validate(object));
-    }
+	public void validate(Object object) {
+		if (beanValidator == null)
+			logger.warn("has no validators registered");
+		else 
+			addAll(beanValidator.validate(object));
+	}
 
-    public void addAll(Collection<? extends Message> messages) {
+	public void addAll(Collection<? extends Message> messages) {
 		for (Message message : messages) {
 			add(message);
 		}
 	}
 
-    public void add(Message message) {
-    	this.errors.add(message);
-    }
+	public void add(Message message) {
+		this.errors.add(message);
+	}
 
 	public boolean hasErrors() {
 		return !errors.isEmpty();
@@ -53,5 +53,5 @@ public class TaskValidator {
 		return Collections.unmodifiableList(this.errors);
 	}
 
-	
+
 }
