@@ -8,4 +8,10 @@ public interface JobProvider {
 
 	Job newJob(Task task);
 
+	boolean canProvide(Class<? extends Job> job);
+	
+	boolean canDecorate(Class<? extends Task> task);
+	
+	Class<? extends Job> getJobWrapper();
+
 }

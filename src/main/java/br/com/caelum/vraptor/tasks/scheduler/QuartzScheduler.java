@@ -2,6 +2,8 @@ package br.com.caelum.vraptor.tasks.scheduler;
 
 import static org.quartz.JobBuilder.newJob;
 
+import java.util.List;
+
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -15,19 +17,20 @@ import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.jobs.DefaultJob;
-import br.com.caelum.vraptor.tasks.jobs.hibernate.HibernateJob;
-import br.com.caelum.vraptor.tasks.jobs.jpa.JPAJob;
+import br.com.caelum.vraptor.tasks.jobs.JobProvider;
 
 
 @Component
 @ApplicationScoped
 public class QuartzScheduler implements TaskScheduler {
 
-	protected static Logger logger = LoggerFactory.getLogger(QuartzScheduler.class);
-	protected Scheduler quartz;
+	protected Logger logger = LoggerFactory.getLogger(QuartzScheduler.class);
+	protected final Scheduler quartz;
+	private final List<JobProvider> providers;
 
-	public QuartzScheduler(Scheduler quartz) {
+	public QuartzScheduler(Scheduler quartz, List<JobProvider> providers) {
 		this.quartz = quartz;
+		this.providers = providers;
 	}
 
 	public void schedule(Task task, Trigger trigger) {
@@ -46,11 +49,13 @@ public class QuartzScheduler implements TaskScheduler {
 	}
 
 	private Class<? extends Job> getJobClass(Task task) {
-		if (br.com.caelum.vraptor.tasks.jobs.hibernate.TransactionalTask.class.isAssignableFrom(task.getClass())) 
-				return HibernateJob.class;
-		if (br.com.caelum.vraptor.tasks.jobs.jpa.TransactionalTask.class.isAssignableFrom(task.getClass())) 
-			return JPAJob.class;
+		for(JobProvider provider : providers){
+			if(provider.canDecorate(task.getClass()))
+				return provider.getJobWrapper();
+		}
+		
 		return DefaultJob.class;
+		
 	}
 
 	public void unschedule(Task task) throws SchedulerException {
