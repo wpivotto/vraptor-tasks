@@ -1,10 +1,11 @@
 package br.com.caelum.vraptor.tasks.jobs;
 
 import org.quartz.Job;
-import org.quartz.JobDetail;
+
+import br.com.caelum.vraptor.tasks.Task;
 
 public interface JobProvider {
 
-	Job newJob(JobDetail jobDetail);
+	Job newJob(Task task);
 
 }

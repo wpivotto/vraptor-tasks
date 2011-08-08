@@ -9,6 +9,7 @@ import org.quartz.spi.TriggerFiredBundle;
 
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
+import br.com.caelum.vraptor.tasks.Task;
 
 @Component
 @ApplicationScoped
@@ -24,8 +25,17 @@ public class DefaultJobFactory implements JobFactory {
 
 		JobDetail detail = bundle.getJobDetail();
 		JobProvider provider = providers.getProvider(detail.getJobClass());
-		return provider.newJob(detail);
+		Task task = newTask(detail);
+		return provider.newJob(task);
 
+	}
+	
+	private Task newTask(JobDetail detail) {
+		try {
+			return (Task) Class.forName(detail.getKey().getName()).getDeclaredConstructor().newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
