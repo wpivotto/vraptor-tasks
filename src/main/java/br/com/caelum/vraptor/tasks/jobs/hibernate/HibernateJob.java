@@ -7,16 +7,16 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import br.com.caelum.vraptor.tasks.validator.TaskValidator;
+import br.com.caelum.vraptor.tasks.validator.Validator;
 
 
 public class HibernateJob implements Job {
 
 	private final TransactionalTask task;
-	private final TaskValidator validator;
+	private final Validator validator;
 	private final Session session;
 
-	public HibernateJob(TransactionalTask task, TaskValidator validator, Session session) {
+	public HibernateJob(TransactionalTask task, Validator validator, Session session) {
 		this.session = session;
 		this.validator = validator;
 		this.task = task;

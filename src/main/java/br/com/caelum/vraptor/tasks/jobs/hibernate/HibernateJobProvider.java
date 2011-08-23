@@ -3,28 +3,28 @@ package br.com.caelum.vraptor.tasks.jobs.hibernate;
 import org.hibernate.SessionFactory;
 import org.quartz.Job;
 
+import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.Container;
-import br.com.caelum.vraptor.ioc.PrototypeScoped;
 import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.jobs.JobProvider;
-import br.com.caelum.vraptor.tasks.validator.TaskValidator;
+import br.com.caelum.vraptor.tasks.validator.TaskValidatorFactory;
 
 @Component
-@PrototypeScoped
+@ApplicationScoped
 public class HibernateJobProvider implements JobProvider {
 
 	private final Container container;
-	private final TaskValidator validator;
+	private final TaskValidatorFactory validatorFactory;
 
-	public HibernateJobProvider(Container container, TaskValidator validator) {
+	public HibernateJobProvider(Container container, TaskValidatorFactory validatorFactory) {
 		this.container = container;
-		this.validator = validator;
+		this.validatorFactory = validatorFactory;
 	}
 
 	public Job newJob(Task task) {
 		SessionFactory factory = container.instanceFor(SessionFactory.class);
-		return new HibernateJob((TransactionalTask) task, validator, factory.openSession());
+		return new HibernateJob((TransactionalTask) task, validatorFactory.getInstance(), factory.openSession());
 	}
 	
 	public boolean canProvide(Class<? extends Job> job) {

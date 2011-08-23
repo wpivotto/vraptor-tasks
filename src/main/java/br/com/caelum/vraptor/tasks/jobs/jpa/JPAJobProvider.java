@@ -4,28 +4,28 @@ import javax.persistence.EntityManagerFactory;
 
 import org.quartz.Job;
 
+import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.Container;
-import br.com.caelum.vraptor.ioc.PrototypeScoped;
 import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.jobs.JobProvider;
-import br.com.caelum.vraptor.tasks.validator.TaskValidator;
+import br.com.caelum.vraptor.tasks.validator.TaskValidatorFactory;
 
 @Component
-@PrototypeScoped
+@ApplicationScoped
 public class JPAJobProvider implements JobProvider {
 
 	private final Container container;
-	private final TaskValidator validator;
+	private final TaskValidatorFactory validatorFactory;
 
-	public JPAJobProvider(Container container, TaskValidator validator) {
+	public JPAJobProvider(Container container, TaskValidatorFactory validatorFactory) {
 		this.container = container;
-		this.validator = validator;
+		this.validatorFactory = validatorFactory;
 	}
 
 	public Job newJob(Task task) {
 		EntityManagerFactory factory = container.instanceFor(EntityManagerFactory.class);
-		return new JPAJob((TransactionalTask) task, validator, factory.createEntityManager());
+		return new JPAJob((TransactionalTask) task, validatorFactory.getInstance(), factory.createEntityManager());
 	}
 
 	public boolean canProvide(Class<? extends Job> job) {

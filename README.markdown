@@ -47,7 +47,7 @@ Tarefa com controle transacional (Hibernate)
 
 		@Override
 		//setup DAOs, Repositories...
-		public void setup(Session session, TaskValidator validator) {
+		public void setup(Session session, Validator validator) {
 			database = new HibernateDatabase(session);
 		}
 	}
@@ -70,7 +70,7 @@ Tarefa com controle transacional (JPA)
 
 		@Override
 		//setup DAOs, Repositories...
-		public void setup(EntityManager manager, TaskValidator validator) {
+		public void setup(EntityManager manager, Validator validator) {
 			database = new JPADatabase(manager);
 		}
 	}
@@ -88,7 +88,7 @@ Se a validação falhar a transação não será efetivada.
 	public class CsvImporter implements TransactionalTask {
 
 		private Database database;
-		private TaskValidator validator;
+		private Validator validator;
 		private CsvFile file = ...
 
 		public void execute() {
@@ -102,7 +102,7 @@ Se a validação falhar a transação não será efetivada.
 			}
 		}
 
-		public void setup(EntityManager manager, TaskValidator validator) {
+		public void setup(EntityManager manager, Validator validator) {
 			this.database = new JPADatabase(manager);
 			this.validator = validator;
 		}

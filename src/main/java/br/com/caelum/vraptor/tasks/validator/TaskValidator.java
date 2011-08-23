@@ -12,7 +12,7 @@ import br.com.caelum.vraptor.validator.BeanValidator;
 import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.Validations;
 
-public class TaskValidator {
+public class TaskValidator implements Validator {
 
 	private static final Logger logger = LoggerFactory.getLogger(TaskValidator.class);
 

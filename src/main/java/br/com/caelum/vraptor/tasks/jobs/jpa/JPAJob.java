@@ -7,15 +7,15 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import br.com.caelum.vraptor.tasks.validator.TaskValidator;
+import br.com.caelum.vraptor.tasks.validator.Validator;
 
 public class JPAJob implements Job {
 
 	private final TransactionalTask task;
-	private final TaskValidator validator;
+	private final Validator validator;
 	private final EntityManager manager;
  
-	public JPAJob(TransactionalTask task, TaskValidator validator, EntityManager manager) {
+	public JPAJob(TransactionalTask task, Validator validator, EntityManager manager) {
 		this.task = task;
 		this.validator = validator;
 		this.manager = manager;
