@@ -1,18 +1,20 @@
 Tasks
 ======
 
-Plug-in da biblioteca de agendamento de tarefas Quartz, para Vraptor
+Plug-in library of Quartz job scheduling for vraptor 
 
-Instalação 
+Installation 
 --------
-Adicione ao seu web.xml
+
+Put `quartz.jar` and `vraptor-tasks.jar` in your `WEB-INF/lib` folder. You can get a copy here
+Add packages on `web.xml`
 
 	<context-param>
         	<param-name>br.com.caelum.vraptor.packages</param-name>
 	        <param-value>br.com.caelum.vraptor.tasks</param-value>
     </context-param>
     
-Tarefa Simples
+Simple Task 
 --------   
 
 	@PrototypeScoped
@@ -29,7 +31,7 @@ Tarefa Simples
 	}
 
 
-Tarefa com controle transacional (Hibernate)
+Transactional Task (Hibernate)
 --------
 
 	import br.com.caelum.vraptor.tasks.jobs.hibernate.TransactionalTask;
@@ -52,7 +54,7 @@ Tarefa com controle transacional (Hibernate)
 		}
 	}
 	
-Tarefa com controle transacional (JPA)
+Transactional Task (JPA)
 --------
 
 	import br.com.caelum.vraptor.tasks.jobs.jpa.TransactionalTask;
@@ -78,10 +80,11 @@ Tarefa com controle transacional (JPA)
 Bean Validation (JSR303)	
 --------
 
-Para usar as validações basta adicionar no seu classpath qualquer implementação do Bean Validation.
-Se a validação falhar a transação não será efetivada.
+To use these features you only need to put any implementation of Bean Validation jars in your classpath.
+If validation fails the transaction will not be effective. 
 
 	import br.com.caelum.vraptor.tasks.jobs.jpa.TransactionalTask;
+	import br.com.caelum.vraptor.tasks.validator.Validator;
 	
 	@PrototypeScoped
 	@Scheduled(fixedRate = 60000)
@@ -123,11 +126,11 @@ Se a validação falhar a transação não será efetivada.
 	...
 	
 	
-Agendamento manual
+Manual Scheduling
 --------
 	
-	Remova a anotação @Scheduled das Tasks
-	Crie o seguinte componente:
+	Remove @Scheduled annotations
+	Create the following component: 
 	
 	@Component
 	@ApplicationScoped
@@ -140,7 +143,7 @@ Agendamento manual
 		}
 	}
 	
-Monitorando Tasks
+Monitoring Tasks 
 --------
 	
 	@Resource
@@ -153,12 +156,12 @@ Monitorando Tasks
 		}
 	}
 	
-Criando Tasks Personalizadas
+Creating Custom Tasks 
 --------
 
-Para criar tasks personalizadas:
+To create custom tasks: 
 
-1.	Crie uma interface que extenda `br.com.caelum.vraptor.tasks.Task`
+1.	Create an interface that extends `br.com.caelum.vraptor.tasks.Task`
 
 		public interface CustomTask extends Task {
 		
@@ -166,7 +169,7 @@ Para criar tasks personalizadas:
 			
 		}
 	
-2.	Crie uma classe que decore a execução de sua Task (deve implementar `org.quartz.Job`)
+2.	Create a class that decorate the execution of its task (must implement `org.quartz.Job`)
 
 		public class CustomJobWrapper implements Job {
 	
@@ -185,7 +188,7 @@ Para criar tasks personalizadas:
 	
 		}
 
-3.	Crie uma classe que implemente `br.com.caelum.vraptor.tasks.jobs.JobProvider`
+3.	Create a class that implements `br.com.caelum.vraptor.tasks.jobs.JobProvider`
 
 		@Component
 		@ApplicationScoped
@@ -193,34 +196,34 @@ Para criar tasks personalizadas:
 	
 			private MyCustomDependency dep;
 			
-			//receba as dependências da sua Task via construtor
+			//Receive your task dependencies via constructor
 			public CustomTaskProvider(MyCustomDependency dep){
 				this.dep = dep;
 			}
 			
-			//Deverá decorar somente as Tasks personalizadas
+			//Should only decorate custom Tasks 
 			public boolean canDecorate(Class<? extends Task> task) {
 				return CustomTask.class.isAssignableFrom(task);
 			}
 			
-			//Registra o seu decorator
+			//Register your decorator 
 			public Class<? extends Job> getJobWrapper() {
 				return CustomJobWrapper.class;
 			}
 			
-			//Deverá instanciar somente as Tasks personalizadas
+			//Should only instantiate custom Tasks 
 			public boolean canProvide(Class<? extends Job> job) {
 				return CustomJobWrapper.class.equals(job);
 			}
 	
-			//Delega a execução para o seu decorator
+			//Delegates the execution
 			public Job newJob(Task task) {
 				return new CustomJobWrapper((CustomTask) task, dep);
 			}
 	
 		}
 
-Licença
+License
 --------
 Copyright (c) 2011 William Pivotto
 All rights reserved.
