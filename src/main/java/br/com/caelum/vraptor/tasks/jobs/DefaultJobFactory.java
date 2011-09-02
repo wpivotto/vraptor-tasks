@@ -16,26 +16,20 @@ import br.com.caelum.vraptor.tasks.Task;
 public class DefaultJobFactory implements JobFactory {
 
 	private final JobProviders providers;
+	private final TaskFactory factory;
 
-	public DefaultJobFactory(JobProviders providers) {
+	public DefaultJobFactory(JobProviders providers, TaskFactory factory) {
 		this.providers = providers;
+		this.factory = factory;
 	}
 
 	public Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) throws SchedulerException {
 
 		JobDetail detail = bundle.getJobDetail();
 		JobProvider provider = providers.getProvider(detail.getJobClass());
-		Task task = newTask(detail);
+		Task task = factory.newTask(detail.getKey().getName());
 		return provider.newJob(task);
 
-	}
-	
-	private Task newTask(JobDetail detail) {
-		try {
-			return (Task) Class.forName(detail.getKey().getName()).getDeclaredConstructor().newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }
