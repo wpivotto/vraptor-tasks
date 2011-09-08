@@ -9,13 +9,13 @@
 	<classpathentry kind="lib" path="libs/slf4j-log4j12-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-3.3.2.jar"/>
 	<classpathentry kind="lib" path="libs/vraptor-3.3.2-20110407.220836-3.jar"/>
-	<classpathentry kind="lib" path="libs/ejb3-persistence-1.0.2.GA.jar"/>
 	<classpathentry kind="lib" path="libs/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="libs/mockito-core-1.8.5.jar"/>
 	<classpathentry kind="lib" path="libs/objenesis-1.1.jar"/>
 	<classpathentry kind="lib" path="libs/jta-1.1.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-validator-4.0.2.GA.jar"/>
 	<classpathentry kind="lib" path="libs/validation-api-1.0.0.GA.jar"/>
+	<classpathentry kind="lib" path="libs/ejb3-persistence-1.0.2.GA.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

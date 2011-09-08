@@ -60,8 +60,7 @@ public class CustomJSR303Validator implements BeanValidator {
 	 * {@link javax.validation.MessageInterpolator.Context}. This class is need
 	 * to interpolate the constraint violation message with localized messages.
 	 * 
-	 * @author Otávio Scherer Garcia
-	 * @version $Revision$
+	 * @author Otavio Scherer Garcia
 	 */
 	class Context implements MessageInterpolator.Context {
 

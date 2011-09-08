@@ -1,0 +1,8 @@
+/work
+/libs
+/.settings
+.classpath
+.DS_Store
+.tomcatplugin
+.project
+target
