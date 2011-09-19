@@ -2,41 +2,27 @@ package br.com.caelum.vraptor.tasks.validator;
 
 import javax.validation.ValidatorFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.Container;
 import br.com.caelum.vraptor.validator.BeanValidator;
 import br.com.caelum.vraptor.validator.NullBeanValidator;
+import br.com.caelum.vraptor.validator.ValidatorFactoryCreator;
 
 @Component
 @ApplicationScoped
 public class TaskValidatorFactory {
 
-	private final Container container;
-	private BeanValidator beanValidator;
-	private static final Logger logger = LoggerFactory.getLogger(TaskValidatorFactory.class);
-	
-	public TaskValidatorFactory(Container container) {
-		this.container = container;
-	}
-
 	public Validator getInstance() {
-		if(beanValidator == null)
-			buildBeanValidator();
-		return new TaskValidator(beanValidator);
+		return new TaskValidator(buildBeanValidator());
 	}
 	
-	public void buildBeanValidator(){
+	public BeanValidator buildBeanValidator(){
 		if(isClassPresent("javax.validation.Validation")){
-			ValidatorFactory factory = container.instanceFor(ValidatorFactory.class);
-			beanValidator = new CustomJSR303Validator(factory.getValidator(), factory.getMessageInterpolator());
-			logger.debug("Initializing JSR303 Validator");
+			ValidatorFactory factory = new ValidatorFactoryCreator().getInstance();
+			return new CustomJSR303Validator(factory.getValidator(), factory.getMessageInterpolator());
 		}
 		else
-			beanValidator = new NullBeanValidator();
+			return new NullBeanValidator();
 	}
 	
 	private boolean isClassPresent(String className) {

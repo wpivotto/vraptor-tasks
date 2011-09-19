@@ -53,5 +53,4 @@ public class TaskValidator implements Validator {
 		return Collections.unmodifiableList(this.errors);
 	}
 
-
 }

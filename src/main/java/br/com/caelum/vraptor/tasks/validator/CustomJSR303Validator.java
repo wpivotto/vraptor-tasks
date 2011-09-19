@@ -29,6 +29,7 @@ public class CustomJSR303Validator implements BeanValidator {
 	public CustomJSR303Validator(Validator validator, MessageInterpolator interpolator) {
 		this.validator = validator;
 		this.interpolator = interpolator;
+		logger.debug("Initializing JSR303 Validator");
 	}
 
 	public List<Message> validate(Object bean) {
