@@ -6,13 +6,7 @@ Plug-in library of Quartz job scheduling for vraptor
 Installation 
 --------
 
-Put `quartz.jar` and `vraptor-tasks.jar` in your `WEB-INF/lib` folder. You can get a copy here
-Add packages on `web.xml`
-
-	<context-param>
-        	<param-name>br.com.caelum.vraptor.packages</param-name>
-	        <param-value>br.com.caelum.vraptor.tasks</param-value>
-    </context-param>
+Put `quartz.jar` and `vraptor-tasks.jar` in your `WEB-INF/lib` folder. 
     
 Simple Task 
 --------   
@@ -101,7 +95,6 @@ If validation fails the transaction will not be effective.
 					validator.validate(client);
 					database.add(client);
 				}
-			
 			}
 		}
 

@@ -62,7 +62,7 @@
 	</build>
 	
   <dependencies>
- 
+		
   	<dependency>
   		<groupId>br.com.caelum</groupId>
   		<artifactId>vraptor</artifactId>
@@ -151,7 +151,10 @@
 			<version>4.5</version>
 			<scope>test</scope>
 		</dependency>
+	
+	
 	<!--  [/Tests] -->
+	
   </dependencies>
   
   <licenses>
@@ -161,6 +164,8 @@
 			<url>http://apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
+	
+	
 	
 	<scm>
 		<url>http://github.com/wpivotto/vraptor-tasks</url>
