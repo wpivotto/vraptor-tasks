@@ -6,7 +6,33 @@ Plug-in library of Quartz job scheduling for vraptor
 Installation 
 --------
 
-Put `quartz.jar` and `vraptor-tasks.jar` in your `WEB-INF/lib` folder. 
+1. 	In a Maven project's pom.xml file:
+	 
+ 		<repositories>
+    		<repository>
+        		<id>sonatype-oss-public</id>
+        		<url>https://oss.sonatype.org/content/groups/public/</url>
+        		<releases>
+            			<enabled>true</enabled>
+          		</releases>
+         		<snapshots>
+            			<enabled>true</enabled>
+	       		</snapshots>
+       	 	</repository>
+		</repositories>
+      
+		<dependency>
+  			<groupId>br.com.prixma</groupId>
+  			<artifactId>vraptor-tasks</artifactId>
+  			<version>1.0.0</version>
+		</dependency>
+		
+		<dependency>
+  			<groupId>org.quartz-scheduler</groupId>
+  			<artifactId>quartz</artifactId>
+  			<version>2.0.1</version>
+  		</dependency>
+
     
 Simple Task 
 --------   
@@ -17,7 +43,6 @@ Simple Task
 
 		private Database database = new Database();
 
-		@Override
 		public void execute() {
 			database.backup();
 		}
@@ -36,12 +61,10 @@ Transactional Task (Hibernate)
 
 		private Database database;
 
-		@Override
 		public void execute() {
 			database.add(new RandomRecord());
 		}
 
-		@Override
 		//setup DAOs, Repositories...
 		public void setup(Session session, Validator validator) {
 			database = new HibernateDatabase(session);
@@ -59,13 +82,10 @@ Transactional Task (JPA)
 
 		private Database database;
 
-		@Override
 		public void execute() {
 			database.add(new RandomRecord());
 		}
 
-		@Override
-		//setup DAOs, Repositories...
 		public void setup(EntityManager manager, Validator validator) {
 			database = new JPADatabase(manager);
 		}
@@ -117,8 +137,8 @@ If validation fails the transaction will not be effective.
 	private String creditCard;
 	
 	...
-	
-	
+
+
 Manual Scheduling
 --------
 	
@@ -142,10 +162,22 @@ Monitoring Tasks
 	@Resource
 	public class TasksController {
 
-		public TasksController(TasksMonitor monitor){
+		public TasksController(TasksMonitor monitor) {
+			
 			TaskStatistics stats = monitor.getStatisticsFor(MyTask.class);
-			log.info("Next Fire Time " + stats.getNextFireTime());
-			...
+			
+			log.debug("Fire Time: {}", stats.getFireTime());
+			log.debug("Scheduled Fire Time: {}", stats.getScheduledFireTime());
+			log.debug("Next Fire Time: {}", stats.getNextFireTime());
+			log.debug("Previous Fire Time: {}", stats.getPreviousFireTime());
+			log.debug("Execution Time: {}", stats.getExecutionTime());
+			log.debug("Max Execution Time: {}", stats.getMaxExecutionTime());
+			log.debug("Min Execution Time: {}", stats.getMinExecutionTime());
+			log.debug("Execution Count: {}", stats.getExecutionCount());
+			log.debug("Refire Count: {}", stats.getRefireCount());
+			log.debug("Fail Count: {}", stats.getFailCount());
+			log.debug("Last Fault: {}", stats.getLastException());
+			
 		}
 	}
 	

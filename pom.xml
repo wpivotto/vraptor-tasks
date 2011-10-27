@@ -1,9 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>vraptor-tasks</groupId>
+  <groupId>br.com.prixma</groupId>
   <artifactId>vraptor-tasks</artifactId>
   <version>1.0.0</version>
   <name>vraptor-tasks</name>
+
+  <!-- 
+  <parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+  </parent>
+  -->
   
   <developers>
 		<developer>
@@ -57,7 +65,51 @@
 					<downloadJavadocs>true</downloadJavadocs>
 				</configuration>
 			</plugin>
-
+			
+			<!-- Create sources.jar -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						  <id>attach-sources</id>
+						  <goals>
+							<goal>jar</goal>
+						  </goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+	
+			<plugin>
+				  <groupId>org.apache.maven.plugins</groupId>
+				  <artifactId>maven-javadoc-plugin</artifactId>
+				  <executions>
+					<execution>
+					  <id>attach-javadocs</id>
+					  <goals>
+						<goal>jar</goal>
+					  </goals>
+					</execution>
+				  </executions>
+			</plugin>
+			
+			<!--
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			-->
+			
 		</plugins>
 	</build>
 	
