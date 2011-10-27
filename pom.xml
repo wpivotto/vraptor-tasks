@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>vraptor-tasks</groupId>
   <artifactId>vraptor-tasks</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>vraptor-tasks</name>
   
   <developers>
@@ -145,6 +145,7 @@
 			<version>1.8.5</version>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -172,4 +173,6 @@
 		<connection>scm:git:git://github.com/wpivotto/vraptor-tasks</connection>
 		<developerConnection>scm:git:git@github.com:wpivotto/vraptor-tasks.git</developerConnection>
 	</scm>
+	
+	
 </project>
