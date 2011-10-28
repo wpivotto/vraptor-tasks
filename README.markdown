@@ -181,6 +181,46 @@ Monitoring Tasks
 		}
 	}
 	
+	
+Tasks and Request Scope
+--------
+
+If you need to access components with request scope, the easiest way is to build your logic into a method of a controller and call it from a task.
+There´s a helper class (TaskRequest) that does it for you. This class finds the path for your method dynamically and performs a get request.
+
+	@ApplicationScoped
+	@Scheduled(fixedRate = 5000)
+	public class RequestScopeTask implements Task {
+
+		private final TaskRequest request;
+	
+		public RequestScopeTask(TaskRequest request) {
+			this.request = request;
+		}
+
+		public void execute() {
+			request.access(Controller.class).method();
+		}
+
+	}
+	
+	@Resource
+	public class Controller {
+	
+		private RequestComponent component;
+		
+		Controller(RequestComponent component){
+			this.component = component;
+		}
+		
+		@Get("task/execute")
+		public void method(){
+			//put task logic here
+		}
+	}
+	
+If you want to block requests from outside the server, there´s a solution here: <https://gist.github.com/1312993>
+
 Creating Custom Tasks 
 --------
 
