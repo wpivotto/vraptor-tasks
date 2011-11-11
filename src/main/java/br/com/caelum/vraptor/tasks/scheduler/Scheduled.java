@@ -13,5 +13,5 @@ import br.com.caelum.vraptor.ioc.Stereotype;
 public @interface Scheduled {
 	String cron() default "";
 	int fixedRate() default 0;
-	int initialDelay() default 5000;
+	int initialDelay() default 0;
 }
