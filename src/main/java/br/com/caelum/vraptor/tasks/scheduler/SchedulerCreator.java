@@ -38,10 +38,15 @@ public class SchedulerCreator implements ComponentFactory<Scheduler> {
 		return scheduler;
 	}
 
+	/**
+	 * Calls {#start()} after the indicated number of seconds. (This call does not block). 
+	 * This can be useful within applications that have initializers that create the scheduler immediately, 
+	 * before the resources needed by the executing jobs have been fully initialized.
+	 */
 	@PostConstruct
 	public void start() {
 		try {
-			this.scheduler.start();
+			this.scheduler.startDelayed(5);
 		} catch (SchedulerException e) {
 			logger.debug("ERROR", e);
 		}
