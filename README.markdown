@@ -228,6 +228,49 @@ public class Controller {
 	
 If you want to block requests from outside the server, there´s a solution here: <https://gist.github.com/1312993>
 
+Controlling Tasks
+--------
+
+Ok, your tasks are scheduled, but sometimes you need control them manually. No problem:
+
+```java	
+@Resource
+public class TaskController {
+	
+	private TaskExecutor executor;
+
+	TaskController(TaskExecutor executor){
+		this.executor = executor;
+	}
+	
+	@Path("task/execute")
+	void execute(){
+		executor.execute(MyTask.class); //execute it now!
+	}
+
+	@Path("task/pause")
+	void pause(){
+		executor.pause(MyTask.class); //pause associated trigger, no more executions!
+	}
+	
+	@Path("...")
+	void resume(Task task){
+		executor.resume(task); //un-pause associated trigger
+	}
+	
+	@Path("tasks/pause")
+	void pauseAll(){
+		executor.pauseAll(); //pause all triggers (put scheduler in 'remembering' mode)
+		//all new tasks will be paused as they are added
+	}
+	
+	@Path("tasks/resume")
+	void resumeAll(){
+		executor.resumeAll(); //un-pause all triggers
+	}
+}
+```
+
 Creating Custom Tasks 
 --------
 
@@ -236,61 +279,81 @@ To create custom tasks:
 1.	Create an interface that extends `br.com.caelum.vraptor.tasks.Task`
 
 ```java
-public interface CustomTask extends Task {
-		
-	void myCustomBehaviour(MyCustomDependency dep); 	
+public interface InterruptableTask extends Task {
+	void interrupt(); 	
 }
 ```	
+
 2.	Create a class that decorate the execution of its task (must implement `org.quartz.Job`)
 
 ```java
-public class CustomJobWrapper implements Job {
-	private final CustomTask task;
-	private final MyCustomDependency dep;	
-			
-	public CustomJobWrapper(CustomTask task, MyCustomDependency dep) {
-		this.task = task;
-		this.dep = dep;
+public class InterruptableJobWrapper implements InterruptableJob {
+
+	private final InterruptableTask delegate;
+
+	public InterruptableJobWrapper(InterruptableTask delegate) {
+		this.delegate = delegate;
 	}
-			
+
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		task.myCustomBehaviour(dep);
-		task.execute();
+		delegate.execute();
+	}
+
+	public void interrupt() throws UnableToInterruptJobException {
+		delegate.interrupt();
 	}
 }
 ```
-3.	Create a class that implements `br.com.caelum.vraptor.tasks.jobs.JobProvider`
+
+3.	Create a class that provides its task (must implement `br.com.caelum.vraptor.tasks.jobs.JobProvider`)
 
 ```java
 @Component
 @ApplicationScoped
-public class CustomTaskProvider implements JobProvider {
-	
-	private MyCustomDependency dep;
-				
-	//Receive your task dependencies via constructor
-	public CustomTaskProvider(MyCustomDependency dep){
-		this.dep = dep;
-	}
-			
-	//Should only decorate custom Tasks 
-	public boolean canDecorate(Class<? extends Task> task) {
-		return CustomTask.class.isAssignableFrom(task);
-	}
-			
-	//Register your decorator 
-	public Class<? extends Job> getJobWrapper() {
-		return CustomJobWrapper.class;
-	}
-			
-	//Should only instantiate custom Tasks 
+public class InterruptableTaskProvider implements JobProvider {
+
+	//Should only instantiate your custom job
 	public boolean canProvide(Class<? extends Job> job) {
-		return CustomJobWrapper.class.equals(job);
+		return InterruptableJobWrapper.class.equals(job);
 	}
 	
-	//Delegates the execution
+	//Should only decorate your custom task
+	public boolean canDecorate(Class<? extends Task> task) {
+		return InterruptableTask.class.isAssignableFrom(task);
+	}
+	
+	//Register your wrapper 
+	public Class<? extends Job> getJobWrapper() {
+		return InterruptableJobWrapper.class;
+	}
+	
+	//Delegates the execution to your wrapper
 	public Job newJob(Task task) {
-		return new CustomJobWrapper((CustomTask) task, dep);
+		return new InterruptableJobWrapper((InterruptableTask) task);
+	}
+
+}
+```
+
+4.	Now we are ready to do some cool task
+
+```java
+@ApplicationScoped
+@Scheduled(fixedRate = 60000)
+public class RuntimeProcessTask implements InterruptableTask {
+	
+	private final Runtime runtime;
+	
+	public RuntimeProcessTask(Runtime runtime) {
+		this.runtime = runtime;
+	}
+
+	public void execute() {
+		runtime.exec("ping www.google.com");
+	}
+
+	public void interrupt() {
+		runtime.kill();
 	}
 }
 ```
