@@ -2,16 +2,16 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>br.com.prixma</groupId>
   <artifactId>vraptor-tasks</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
   <name>vraptor-tasks</name>
 
-  <!-- 
+  
   <parent>
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
 		<version>7</version>
   </parent>
-  -->
+  
   
   <developers>
 		<developer>

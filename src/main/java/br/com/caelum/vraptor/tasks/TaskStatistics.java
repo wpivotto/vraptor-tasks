@@ -7,7 +7,7 @@ import org.quartz.JobExecutionContext;
 
 public class TaskStatistics {
 	
-	private final String taskName;
+	private final Class<? extends Task> task;
 	private Date fireTime;
 	private Date scheduledFireTime;
 	private Date nextFireTime;
@@ -20,12 +20,16 @@ public class TaskStatistics {
 	private int failCount;
 	private Throwable lastException;
 	
-	public TaskStatistics(String taskName) {
-		this.taskName = taskName;
+	public TaskStatistics(Class<? extends Task> task) {
+		this.task = task;
+	}
+	
+	public Class<? extends Task> getTask() {
+		return task;
 	}
 
 	public String getTaskName() {
-		return taskName;
+		return task.getName();
 	}
 
 	public Date getFireTime() {

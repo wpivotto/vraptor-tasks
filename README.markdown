@@ -25,7 +25,7 @@ Installation
 <dependency>
   	<groupId>br.com.prixma</groupId>
   	<artifactId>vraptor-tasks</artifactId>
-  	<version>1.0.0</version>
+  	<version>1.0.1</version>
 </dependency>
 ```
   
@@ -161,29 +161,6 @@ public class CustomScheduler {
 }
 ```
 	
-Monitoring Tasks 
---------
-```java
-@Resource
-public class TasksController {
-
-	public TasksController(TasksMonitor monitor) {
-		TaskStatistics stats = monitor.getStatisticsFor(MyTask.class);
-		log.debug("Fire Time: {}", stats.getFireTime());
-		log.debug("Scheduled Fire Time: {}", stats.getScheduledFireTime());
-		log.debug("Next Fire Time: {}", stats.getNextFireTime());
-		log.debug("Previous Fire Time: {}", stats.getPreviousFireTime());
-		log.debug("Execution Time: {}", stats.getExecutionTime());
-		log.debug("Max Execution Time: {}", stats.getMaxExecutionTime());
-		log.debug("Min Execution Time: {}", stats.getMinExecutionTime());
-		log.debug("Execution Count: {}", stats.getExecutionCount());
-		log.debug("Refire Count: {}", stats.getRefireCount());
-		log.debug("Fail Count: {}", stats.getFailCount());
-		log.debug("Last Fault: {}", stats.getLastException());
-	}
-}
-```	
-	
 Tasks and Request Scope
 --------
 
@@ -270,6 +247,61 @@ public class TaskController {
 	}
 }
 ```
+
+Monitoring Tasks 
+--------
+```java
+@Resource
+public class TasksController {
+
+	public TasksController(TasksMonitor monitor) {
+		TaskStatistics stats = monitor.getStatisticsFor(MyTask.class);
+		log.debug("Fire Time: {}", stats.getFireTime());
+		log.debug("Scheduled Fire Time: {}", stats.getScheduledFireTime());
+		log.debug("Next Fire Time: {}", stats.getNextFireTime());
+		log.debug("Previous Fire Time: {}", stats.getPreviousFireTime());
+		log.debug("Execution Time: {}", stats.getExecutionTime());
+		log.debug("Max Execution Time: {}", stats.getMaxExecutionTime());
+		log.debug("Min Execution Time: {}", stats.getMinExecutionTime());
+		log.debug("Execution Count: {}", stats.getExecutionCount());
+		log.debug("Refire Count: {}", stats.getRefireCount());
+		log.debug("Fail Count: {}", stats.getFailCount());
+		log.debug("Last Fault: {}", stats.getLastException());
+	}
+}
+```	
+
+More information?
+
+```java
+@Component
+public class TaskEventLogger implements TaskCallback {
+
+	private Session session;
+	
+	...
+
+	public void executed(Class task, TaskStatistics stats) {
+		session.persist(...);
+	}
+	
+	public void scheduled(Task task){ ... }
+	
+	public void unscheduled(Task task){ ... }
+	
+	public void failed(Class task, TaskStatistics stats, Exception error){ ... }
+	
+	public void paused(Class task){ ... }
+	
+	public void resumed(Class task){ ... }
+	
+	public void beforeExecute(Class task){ ... }
+	
+	public void executionVetoed(Class task){ ... }
+	
+	...
+}
+```	
 
 Creating Custom Tasks 
 --------

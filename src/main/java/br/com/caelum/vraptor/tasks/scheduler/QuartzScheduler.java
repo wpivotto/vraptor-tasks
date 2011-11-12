@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.Task;
+import br.com.caelum.vraptor.tasks.callback.TaskEventNotifier;
 import br.com.caelum.vraptor.tasks.jobs.DefaultJob;
 import br.com.caelum.vraptor.tasks.jobs.JobProvider;
 
@@ -27,10 +28,12 @@ public class QuartzScheduler implements TaskScheduler {
 	protected Logger logger = LoggerFactory.getLogger(QuartzScheduler.class);
 	protected final Scheduler quartz;
 	private final List<JobProvider> providers;
+	private final TaskEventNotifier notifier;
 
-	public QuartzScheduler(Scheduler quartz, List<JobProvider> providers) {
+	public QuartzScheduler(Scheduler quartz, List<JobProvider> providers, TaskEventNotifier notifier) {
 		this.quartz = quartz;
 		this.providers = providers;
+		this.notifier = notifier;
 	}
 
 	public void schedule(Task task, Trigger trigger) {
@@ -40,7 +43,7 @@ public class QuartzScheduler implements TaskScheduler {
 		try {
 
 			quartz.scheduleJob(detail, trigger);
-			logger.debug("Task " + task.getClass().getName() + " scheduled");
+			notifier.notifyScheduledEvent(task);
 
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
@@ -62,7 +65,7 @@ public class QuartzScheduler implements TaskScheduler {
 		JobKey key = new JobKey(task.getClass().getName());
 		if (quartz.checkExists(key))
 			quartz.deleteJob(key);
-
+		notifier.notifyUnscheduledEvent(task);
 	}
 
 }
