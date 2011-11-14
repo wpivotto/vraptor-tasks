@@ -1,14 +1,16 @@
 package br.com.caelum.vraptor.tasks.callback;
 
+import org.quartz.Trigger;
+
 import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.TaskStatistics;
 
 
 public interface TaskCallback {
 	
-	void scheduled(Task task);
+	void scheduled(Class<? extends Task> task, Trigger trigger);
 	
-	void unscheduled(Task task);
+	void unscheduled(Class<? extends Task> task);
 	
 	void beforeExecute(Class<? extends Task> task);
 	

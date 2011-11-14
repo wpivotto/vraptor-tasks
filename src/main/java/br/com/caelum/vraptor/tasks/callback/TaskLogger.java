@@ -1,5 +1,8 @@
 package br.com.caelum.vraptor.tasks.callback;
 
+import org.quartz.CronTrigger;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,13 +18,13 @@ public class TaskLogger implements TaskCallback {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Override
-	public void scheduled(Task task) {
-		logger.debug("Task {} was sucessfully scheduled", task.getClass().getName());
+	public void scheduled(Class<? extends Task> task, Trigger trigger) {
+		logger.debug("Task {} was successfully scheduled. Trigger Expression {}", task.getName(), triggerInfo(trigger));
 	}
 
 	@Override
-	public void unscheduled(Task task) {
-		logger.debug("Task {} was sucessfully unscheduled", task.getClass().getName());
+	public void unscheduled(Class<? extends Task> task) {
+		logger.debug("Task {} was successfully unscheduled", task.getName());
 	}
 
 	@Override
@@ -36,7 +39,7 @@ public class TaskLogger implements TaskCallback {
 
 	@Override
 	public void executed(Class<? extends Task> task, TaskStatistics stats) {
-		logger.debug("Task {} was sucessfully executed", task.getName());
+		logger.debug("Task {} was successfully executed", task.getName());
 	}
 	
 	@Override
@@ -62,6 +65,13 @@ public class TaskLogger implements TaskCallback {
 	@Override
 	public void resumedAll() {
 		logger.debug("All tasks have been resumed");
+	}
+	
+	private String triggerInfo(Trigger trigger){
+		if(SimpleTrigger.class.isAssignableFrom(trigger.getClass()))
+			return "Fixed Rate: " + ((SimpleTrigger) trigger).getRepeatInterval();
+		else
+			return "Cron: " + ((CronTrigger) trigger).getCronExpression();
 	}
 	
 	

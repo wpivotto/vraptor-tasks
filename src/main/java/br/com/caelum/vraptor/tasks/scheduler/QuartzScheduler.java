@@ -43,7 +43,7 @@ public class QuartzScheduler implements TaskScheduler {
 		try {
 
 			quartz.scheduleJob(detail, trigger);
-			notifier.notifyScheduledEvent(task);
+			notifier.notifyScheduledEvent(task.getClass(), trigger);
 
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
@@ -65,7 +65,7 @@ public class QuartzScheduler implements TaskScheduler {
 		JobKey key = new JobKey(task.getClass().getName());
 		if (quartz.checkExists(key))
 			quartz.deleteJob(key);
-		notifier.notifyUnscheduledEvent(task);
+		notifier.notifyUnscheduledEvent(task.getClass());
 	}
 
 }

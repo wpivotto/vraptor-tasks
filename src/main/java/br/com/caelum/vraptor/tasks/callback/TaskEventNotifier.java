@@ -2,7 +2,7 @@ package br.com.caelum.vraptor.tasks.callback;
 
 import java.util.List;
 
-import org.quartz.JobExecutionException;
+import org.quartz.Trigger;
 
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
@@ -19,13 +19,13 @@ public class TaskEventNotifier {
 		this.listeners = listeners;
 	}
 	
-	public void notifyScheduledEvent(Task task){
+	public void notifyScheduledEvent(Class<? extends Task> task, Trigger trigger){
 		for(TaskCallback listener : listeners){
-			listener.scheduled(task);
+			listener.scheduled(task, trigger);
 		}
 	}
 
-	public void notifyUnscheduledEvent(Task task){
+	public void notifyUnscheduledEvent(Class<? extends Task> task){
 		for(TaskCallback listener : listeners){
 			listener.unscheduled(task);
 		}

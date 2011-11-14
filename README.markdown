@@ -277,17 +277,11 @@ More information?
 @Component
 public class TaskEventLogger implements TaskCallback {
 
-	private Session session;
+	public void executed(Class task, TaskStatistics stats){ ... }
 	
-	...
-
-	public void executed(Class task, TaskStatistics stats) {
-		session.persist(...);
-	}
+	public void scheduled(Class task, Trigger trigger){ ... }
 	
-	public void scheduled(Task task){ ... }
-	
-	public void unscheduled(Task task){ ... }
+	public void unscheduled(Class task){ ... }
 	
 	public void failed(Class task, TaskStatistics stats, Exception error){ ... }
 	
