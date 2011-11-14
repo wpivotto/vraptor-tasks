@@ -61,19 +61,6 @@ public class TaskEventNotifier {
 		}
 	}
 
-	public void notifyPauseAllEvent() {
-		for(TaskCallback listener : listeners){
-			listener.pausedAll();
-		}
-		
-	}
-
-	public void notifyResumeAllEvent() {
-		for(TaskCallback listener : listeners){
-			listener.resumedAll();
-		}
-	}
-
 	public void notifyFailedEvent(Class<? extends Task> task, TaskStatistics stats, Exception exception) {
 		for(TaskCallback listener : listeners){
 			listener.failed(task, stats, exception);

@@ -3,9 +3,15 @@ package br.com.caelum.vraptor.tasks;
 import java.util.Collection;
 import java.util.Map;
 
+import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.JobKey;
 import org.quartz.JobListener;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerListener;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
@@ -15,7 +21,7 @@ import com.google.common.collect.Maps;
 
 @Component
 @ApplicationScoped
-public class TasksMonitor implements JobListener {
+public class TasksMonitor implements JobListener, SchedulerListener {
 	
 	private final TaskEventNotifier notifier;
 	
@@ -51,37 +57,78 @@ public class TasksMonitor implements JobListener {
 			notifier.notifyExecutedEvent(taskClass(context), stats);
 
 	}
-
-	private String taskName(JobExecutionContext context){
-		return context.getJobDetail().getKey().getName();
+	
+	private Class<? extends Task> taskClass(JobExecutionContext context){
+		return taskClass(context.getJobDetail().getKey().getName());
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Class<? extends Task> taskClass(JobExecutionContext context){
+	private Class<? extends Task> taskClass(String className){
 		try {
-			return (Class<? extends Task>) Class.forName(taskName(context));
+			return (Class<? extends Task>) Class.forName(className);
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException(e);
 		}
 	}
 
-	private TaskStatistics getStatistics(Class<? extends Task> task){
-		if(!statistics.containsKey(task))
-			statistics.put(task, new TaskStatistics(task));
-		return statistics.get(task);
-	}
-
 	public TaskStatistics getStatisticsFor(Task task){
-		return getStatistics(task.getClass());
+		return statistics.get(task.getClass());
 	}
 	
 	public TaskStatistics getStatisticsFor(Class<? extends Task> task){
-		return getStatistics(task);
+		return statistics.get(task);
 	}
 
 	public Collection<TaskStatistics> getStatistics(){
 		return statistics.values();
 	}
 
+	public void jobScheduled(Trigger trigger) {
+		Class<? extends Task> task = taskClass(trigger.getJobKey().getName());
+		statistics.put(task, new TaskStatistics(task, trigger));
+		notifier.notifyScheduledEvent(task, trigger);
+	}
+	
+	public void jobDeleted(JobKey jobKey) {
+		notifier.notifyUnscheduledEvent(taskClass(jobKey.getName()));
+	}
+
+	public void jobPaused(JobKey jobKey) {
+		notifier.notifyPausedEvent(taskClass(jobKey.getName()));
+	}
+
+	public void jobResumed(JobKey jobKey) {
+		notifier.notifyResumedEvent(taskClass(jobKey.getName()));
+	}
+	
+	public void jobsPaused(String jobGroup) {}
+
+	public void jobUnscheduled(TriggerKey triggerKey) {}
+
+	public void triggerFinalized(Trigger trigger) {}
+
+	public void triggerPaused(TriggerKey triggerKey) {}
+
+	public void triggersPaused(String triggerGroup) {}
+
+	public void triggerResumed(TriggerKey triggerKey) {}
+
+	public void triggersResumed(String triggerGroup) {}
+
+	public void jobAdded(JobDetail jobDetail) {}
+
+	public void jobsResumed(String jobGroup) {}
+
+	public void schedulerError(String msg, SchedulerException cause) {}
+
+	public void schedulerInStandbyMode() {}
+
+	public void schedulerStarted() {}
+
+	public void schedulerShutdown() {}
+
+	public void schedulerShuttingdown() {}
+
+	public void schedulingDataCleared() {}
 
 }

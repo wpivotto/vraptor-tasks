@@ -16,7 +16,7 @@ import br.com.caelum.vraptor.tasks.TaskStatistics;
 public class TaskLogger implements TaskCallback {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
+
 	@Override
 	public void scheduled(Class<? extends Task> task, Trigger trigger) {
 		logger.debug("Task {} was successfully scheduled. Trigger Expression {}", task.getName(), triggerInfo(trigger));
@@ -55,16 +55,6 @@ public class TaskLogger implements TaskCallback {
 	@Override
 	public void resumed(Class<? extends Task> task) {
 		logger.debug("Task {} was resumed", task.getName());
-	}
-
-	@Override
-	public void pausedAll() {
-		logger.debug("All tasks have been paused");
-	}
-
-	@Override
-	public void resumedAll() {
-		logger.debug("All tasks have been resumed");
 	}
 	
 	private String triggerInfo(Trigger trigger){

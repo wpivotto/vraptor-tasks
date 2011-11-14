@@ -23,9 +23,5 @@ public interface TaskCallback {
 	void paused(Class<? extends Task> task);
 
 	void resumed(Class<? extends Task> task);
-	
-	void pausedAll();
-	
-	void resumedAll();
 
 }

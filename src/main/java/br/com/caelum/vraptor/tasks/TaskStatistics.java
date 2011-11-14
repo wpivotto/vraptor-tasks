@@ -2,12 +2,18 @@ package br.com.caelum.vraptor.tasks;
 
 import java.util.Date;
 
+import org.quartz.CronTrigger;
 import org.quartz.JobExecutionContext;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
+
+import com.google.common.base.Throwables;
 
 
 public class TaskStatistics {
 	
 	private final Class<? extends Task> task;
+	private final Trigger trigger;
 	private Date fireTime;
 	private Date scheduledFireTime;
 	private Date nextFireTime;
@@ -20,8 +26,9 @@ public class TaskStatistics {
 	private int failCount;
 	private Throwable lastException;
 	
-	public TaskStatistics(Class<? extends Task> task) {
+	public TaskStatistics(Class<? extends Task> task, Trigger trigger) {
 		this.task = task;
+		this.trigger = trigger;
 	}
 	
 	public Class<? extends Task> getTask() {
@@ -74,6 +81,21 @@ public class TaskStatistics {
 	
 	public Throwable getLastException() {
 		return lastException;
+	}
+	
+	public String getStackTraceAsString() {
+		return Throwables.getStackTraceAsString(lastException);
+	}
+	
+	public String getTriggerExpression(){
+		if(SimpleTrigger.class.isAssignableFrom(trigger.getClass()))
+			return "Fixed Rate: " + ((SimpleTrigger) trigger).getRepeatInterval();
+		else
+			return "Cron: " + ((CronTrigger) trigger).getCronExpression();
+	}
+	
+	public Trigger getTrigger(){
+		return trigger;
 	}
 
 	public void update(JobExecutionContext context) {

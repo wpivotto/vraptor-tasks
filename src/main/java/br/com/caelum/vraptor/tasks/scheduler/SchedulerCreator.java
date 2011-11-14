@@ -28,6 +28,7 @@ public class SchedulerCreator implements ComponentFactory<Scheduler> {
 			this.scheduler = new StdSchedulerFactory().getScheduler();
 			this.scheduler.setJobFactory(factory);
 			this.scheduler.getListenerManager().addJobListener(monitor);
+			this.scheduler.getListenerManager().addSchedulerListener(monitor);
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
 		}
@@ -48,7 +49,7 @@ public class SchedulerCreator implements ComponentFactory<Scheduler> {
 		try {
 			this.scheduler.startDelayed(5);
 		} catch (SchedulerException e) {
-			logger.debug("ERROR", e);
+			logger.error("ERROR", e);
 		}
 	}
 
@@ -57,7 +58,7 @@ public class SchedulerCreator implements ComponentFactory<Scheduler> {
 		try {
 			this.scheduler.shutdown(true);
 		} catch (SchedulerException e) {
-			logger.debug("ERROR", e);
+			logger.error("ERROR", e);
 		}
 
 	}
