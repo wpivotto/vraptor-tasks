@@ -29,6 +29,7 @@ public class SchedulerCreator implements ComponentFactory<Scheduler> {
 			this.scheduler.setJobFactory(factory);
 			this.scheduler.getListenerManager().addJobListener(monitor);
 			this.scheduler.getListenerManager().addSchedulerListener(monitor);
+			monitor.setScheduler(this.scheduler);
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
 		}
