@@ -205,6 +205,23 @@ public class Controller {
 	
 If you want to block requests from outside the server, there´s a solution here: <https://gist.github.com/1312993>
 
+Stateful Tasks
+--------
+
+By default, Quartz jobs are stateless, resulting in the possibility of jobs interfering with each other. It might be possible that before the first job has finished, the second one will start. 
+To make tasks non-concurrent, set the concurrent flag to false. This flag ensures that job execution doesn't overlap.
+Example:
+
+```java
+@Scheduled(fixedRate = 30000, concurrent = false)
+public class BatchImporter implements Task {
+
+	public void execute() {
+		...
+	}
+}
+```
+
 Controlling Tasks
 --------
 

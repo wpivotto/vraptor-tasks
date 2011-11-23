@@ -104,7 +104,7 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 
 	public void jobScheduled(Trigger trigger) {
 		String taskName = trigger.getJobKey().getName();
-		Class<? extends Task> taskClass = taskClass(trigger.getJobKey().getName());
+		Class<? extends Task> taskClass = taskClass(taskName);
 		if(!statistics.containsKey(taskName)) {
 			statistics.put(taskName, new TaskStatistics(taskClass, trigger));
 			notifier.notifyScheduledEvent(taskClass, trigger);

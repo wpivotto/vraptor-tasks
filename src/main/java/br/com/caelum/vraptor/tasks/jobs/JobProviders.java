@@ -7,6 +7,7 @@ import org.quartz.Job;
 
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.PrototypeScoped;
+import br.com.caelum.vraptor.tasks.jobs.simple.DefaultJobProvider;
 
 @Component
 @PrototypeScoped
@@ -24,7 +25,7 @@ public class JobProviders {
 			if(provider.canProvide(job))
 				return provider;
 		}
-	
+		
 		return new DefaultJobProvider();
 		
 	}	

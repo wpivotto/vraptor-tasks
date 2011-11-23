@@ -32,7 +32,8 @@ public class JPAJobTest {
     @Test
     public void shouldStartAndCommitTransaction() throws Exception {
 
-    	JPAJob job = new JPAJob(task, validator, manager);
+    	TaskLogic work = new TaskLogic(task, validator, manager);
+    	ConcurrentJPAJob job = new ConcurrentJPAJob(work);
        
     	when(manager.getTransaction()).thenReturn(transaction);
         when(transaction.isActive()).thenReturn(false);
@@ -49,7 +50,8 @@ public class JPAJobTest {
     @Test
     public void shouldRollbackTransactionIfStillActiveWhenExecutionFinishes() throws Exception {
     	
-    	JPAJob job = new JPAJob(task, validator, manager);
+    	TaskLogic work = new TaskLogic(task, validator, manager);
+    	ConcurrentJPAJob job = new ConcurrentJPAJob(work);
         when(manager.getTransaction()).thenReturn(transaction);
         when(transaction.isActive()).thenReturn(true);
         job.execute(context);

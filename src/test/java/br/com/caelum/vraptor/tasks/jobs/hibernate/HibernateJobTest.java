@@ -31,7 +31,8 @@ public class HibernateJobTest {
     @Test
     public void shouldStartAndCommitTransaction() throws Exception {
 
-    	HibernateJob job = new HibernateJob(task, validator, session);
+    	TaskLogic work = new TaskLogic(task, validator, session);
+    	ConcurrentHibernateJob job = new ConcurrentHibernateJob(work);
 
         when(session.beginTransaction()).thenReturn(transaction);
         when(transaction.isActive()).thenReturn(false);
@@ -48,7 +49,8 @@ public class HibernateJobTest {
     @Test
     public void shouldRollbackTransactionIfStillActiveWhenExecutionFinishes() throws Exception {
     	
-    	HibernateJob job = new HibernateJob(task, validator, session);
+    	TaskLogic work = new TaskLogic(task, validator, session);
+    	ConcurrentHibernateJob job = new ConcurrentHibernateJob(work);
         when(session.beginTransaction()).thenReturn(transaction);
         when(transaction.isActive()).thenReturn(true);
         job.execute(context);

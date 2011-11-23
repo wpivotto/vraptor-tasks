@@ -14,8 +14,8 @@ import org.quartz.Trigger;
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.Task;
-import br.com.caelum.vraptor.tasks.jobs.DefaultJob;
 import br.com.caelum.vraptor.tasks.jobs.JobProvider;
+import br.com.caelum.vraptor.tasks.jobs.simple.DefaultJobProvider;
 
 
 @Component
@@ -43,12 +43,15 @@ public class QuartzScheduler implements TaskScheduler {
 	}
 
 	private Class<? extends Job> getJobClass(Task task) {
+	
+		Scheduled options = task.getClass().getAnnotation(Scheduled.class);
+		
 		for(JobProvider provider : providers){
 			if(provider.canDecorate(task.getClass()))
-				return provider.getJobWrapper();
+				return provider.getJobWrapper(options);
 		}
 		
-		return DefaultJob.class;
+		return new DefaultJobProvider().getJobWrapper(options);
 		
 	}
 

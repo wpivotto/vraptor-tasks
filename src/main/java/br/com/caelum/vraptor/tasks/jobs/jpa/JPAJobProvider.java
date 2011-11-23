@@ -9,6 +9,7 @@ import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.Container;
 import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.jobs.JobProvider;
+import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 import br.com.caelum.vraptor.tasks.validator.TaskValidatorFactory;
 
 @Component
@@ -23,21 +24,29 @@ public class JPAJobProvider implements JobProvider {
 		this.validatorFactory = validatorFactory;
 	}
 
-	public Job newJob(Task task) {
+	public Job newJob(Task task, Scheduled options) {
 		EntityManagerFactory factory = container.instanceFor(EntityManagerFactory.class);
-		return new JPAJob((TransactionalTask) task, validatorFactory.getInstance(), factory.createEntityManager());
+		TaskLogic logic = new TaskLogic((TransactionalTask) task, validatorFactory.getInstance(), factory.createEntityManager());
+		
+		if(options == null)
+			return new ConcurrentJPAJob(logic);
+		
+		return options.concurrent() ? new ConcurrentJPAJob(logic) : new StatefulJPAJob(logic);
 	}
 
 	public boolean canProvide(Class<? extends Job> job) {
-		return JPAJob.class.equals(job);
+		return ConcurrentJPAJob.class.equals(job) || StatefulJPAJob.class.equals(job);
 	}
 	
 	public boolean canDecorate(Class<? extends Task> task) {
 		return TransactionalTask.class.isAssignableFrom(task);
 	}
 
-	public Class<? extends Job> getJobWrapper() {
-		return JPAJob.class;
+	public Class<? extends Job> getJobWrapper(Scheduled options) {
+		if(options == null)
+			return ConcurrentJPAJob.class;
+		
+		return options.concurrent() ? ConcurrentJPAJob.class : StatefulJPAJob.class;
 	}
 	
 }

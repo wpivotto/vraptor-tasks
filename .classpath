@@ -4,7 +4,7 @@
   <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
   <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
   <classpathentry kind="output" path="target/classes"/>
-  <classpathentry kind="var" path="M2_REPO/javax/transaction/jta/1.1/jta-1.1.jar" sourcepath="M2_REPO/javax/transaction/jta/1.1/jta-1.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/transaction/jta/1.0.1B/jta-1.0.1B.jar"/>
   <classpathentry kind="var" path="M2_REPO/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar" sourcepath="M2_REPO/javax/servlet/servlet-api/2.5/servlet-api-2.5-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA.jar" sourcepath="M2_REPO/javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA-sources.jar">
     <attributes>
@@ -78,9 +78,9 @@
       <attribute value="jar:file:/C:/Documents%20and%20Settings/Prixma/.m2/repository/com/thoughtworks/paranamer/paranamer/2.2/paranamer-2.2-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/quartz-scheduler/quartz/2.0.1/quartz-2.0.1.jar" sourcepath="M2_REPO/org/quartz-scheduler/quartz/2.0.1/quartz-2.0.1-sources.jar">
+  <classpathentry kind="var" path="M2_REPO/org/quartz-scheduler/quartz/2.1.1/quartz-2.1.1.jar" sourcepath="M2_REPO/org/quartz-scheduler/quartz/2.1.1/quartz-2.1.1-sources.jar">
     <attributes>
-      <attribute value="jar:file:/C:/Documents%20and%20Settings/Prixma/.m2/repository/org/quartz-scheduler/quartz/2.0.1/quartz-2.0.1-javadoc.jar!/" name="javadoc_location"/>
+      <attribute value="jar:file:/C:/Documents%20and%20Settings/Prixma/.m2/repository/org/quartz-scheduler/quartz/2.1.1/quartz-2.1.1-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
   <classpathentry kind="var" path="M2_REPO/net/sf/scannotation/scannotation/1.0.2/scannotation-1.0.2.jar" sourcepath="M2_REPO/net/sf/scannotation/scannotation/1.0.2/scannotation-1.0.2-sources.jar">

@@ -3,25 +3,21 @@ package br.com.caelum.vraptor.tasks.jobs.jpa;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-
 import br.com.caelum.vraptor.tasks.validator.Validator;
 
-public class JPAJob implements Job {
-
+public class TaskLogic {
+	
 	private final TransactionalTask task;
 	private final Validator validator;
 	private final EntityManager manager;
  
-	public JPAJob(TransactionalTask task, Validator validator, EntityManager manager) {
+	public TaskLogic(TransactionalTask task, Validator validator, EntityManager manager) {
 		this.task = task;
 		this.validator = validator;
 		this.manager = manager;
 	}
 
-	public void execute(JobExecutionContext context) throws JobExecutionException {
+	public void execute(){
 
 		EntityTransaction transaction = null;
 		
@@ -41,4 +37,5 @@ public class JPAJob implements Job {
 			manager.close();
 		}
 	}
+
 }

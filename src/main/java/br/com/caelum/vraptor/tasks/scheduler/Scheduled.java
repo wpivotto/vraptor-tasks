@@ -14,4 +14,5 @@ public @interface Scheduled {
 	String cron() default "";
 	int fixedRate() default 0;
 	int initialDelay() default 0;
+	boolean concurrent() default true;
 }

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>br.com.prixma</groupId>
   <artifactId>vraptor-tasks</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2-SNAPSHOT</version>
   <name>vraptor-tasks</name>
 
   
@@ -142,12 +142,7 @@
 			<artifactId>hibernate</artifactId>
 			<version>3.2.0.ga</version>
 			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.transaction</groupId>
-					<artifactId>jta</artifactId>
-				</exclusion>
-			</exclusions>
+
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -225,6 +220,22 @@
 			<url>http://apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
+	
+	<repositories>
+		<repository>
+        <id>maven2-repository.dev.java.net</id>
+        <name>Java.net Repository for Maven</name>
+        <url>http://download.java.net/maven/2/
+        </url>
+        <layout>default</layout>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+    </repository>
+	</repositories>
 	
 	
 	
