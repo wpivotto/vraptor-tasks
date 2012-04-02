@@ -1,0 +1,486 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Vraptor-tasks by wpivotto</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Vraptor-tasks</h1>
+<p>This plugin adds Quartz job scheduling features to Vraptor application</p>
+        <p class="view"><a href="https://github.com/wpivotto/vraptor-tasks">View the Project on GitHub <small>wpivotto/vraptor-tasks</small></a></p>
+        <ul>
+          <li><a href="https://github.com/wpivotto/vraptor-tasks/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/wpivotto/vraptor-tasks/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/wpivotto/vraptor-tasks">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Tasks</h1>
+
+<p>This plugin allows your Vraptor application to schedule jobs to be executed using a specified interval or cron expression.</p>
+
+<h2>Installation </h2>
+
+<ol>
+<li> In a Maven project's pom.xml file:</li>
+</ol><div class="highlight">
+<pre> <span class="nt">&lt;repositories&gt;</span>
+    <span class="nt">&lt;repository&gt;</span>
+        <span class="nt">&lt;id&gt;</span>sonatype-oss-public<span class="nt">&lt;/id&gt;</span>
+        <span class="nt">&lt;url&gt;</span><a href="https://oss.sonatype.org/content/groups/public/">https://oss.sonatype.org/content/groups/public/</a><span class="nt">&lt;/url&gt;</span>
+        <span class="nt">&lt;releases&gt;</span>
+            <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+        <span class="nt">&lt;/releases&gt;</span>
+        <span class="nt">&lt;snapshots&gt;</span>
+            <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+        <span class="nt">&lt;/snapshots&gt;</span>
+    <span class="nt">&lt;/repository&gt;</span>
+<span class="nt">&lt;/repositories&gt;</span> 
+
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>br.com.prixma<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>vraptor-tasks<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.1<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre>
+</div>
+
+
+<h2>Simple Task </h2>
+
+<div class="highlight">
+<pre><span class="nd">@PrototypeScoped</span>
+<span class="nd">@Scheduled</span><span class="o">(</span><span class="n">fixedRate</span> <span class="o">=</span> <span class="mi">30000</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ReportsDelivery</span> <span class="kd">implements</span> <span class="n">Task</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">Mailer</span> <span class="n">mailer</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">ScheduledReports</span> <span class="n">reports</span><span class="o">;</span>
+
+    <span class="n">ReportsDelivery</span><span class="o">(</span><span class="n">Mailer</span> <span class="n">mailer</span><span class="o">,</span> <span class="n">ScheduledReports</span> <span class="n">reports</span><span class="o">){</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">mailer</span> <span class="o">=</span> <span class="n">mailer</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">reports</span> <span class="o">=</span> <span class="n">reports</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">for</span><span class="o">(</span><span class="n">Email</span> <span class="n">email</span> <span class="o">:</span> <span class="n">reports</span><span class="o">.</span><span class="na">toDeliver</span><span class="o">()){</span>
+            <span class="n">mailer</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">email</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<h2>Transactional Task (Hibernate)</h2>
+
+<div class="highlight">
+<pre><span class="kn">import</span> <span class="nn">br.com.caelum.vraptor.tasks.jobs.hibernate.TransactionalTask</span><span class="o">;</span>
+
+<span class="nd">@PrototypeScoped</span>
+<span class="nd">@Scheduled</span><span class="o">(</span><span class="n">cron</span> <span class="o">=</span> <span class="s">"* * 0/12 * * ?"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DatabaseDumper</span> <span class="kd">implements</span> <span class="n">TransactionalTask</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">Database</span> <span class="n">database</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">database</span><span class="o">.</span><span class="na">backup</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">(</span><span class="n">Session</span> <span class="n">session</span><span class="o">,</span> <span class="n">Validator</span> <span class="n">validator</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Database</span><span class="o">(</span><span class="n">session</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<h2>Transactional Task (JPA)</h2>
+
+<div class="highlight">
+<pre><span class="kn">import</span> <span class="nn">br.com.caelum.vraptor.tasks.jobs.jpa.TransactionalTask</span><span class="o">;</span>
+
+<span class="nd">@PrototypeScoped</span>
+<span class="nd">@Scheduled</span><span class="o">(</span><span class="n">cron</span> <span class="o">=</span> <span class="s">"* * 0/12 * * ?"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DatabaseDumper</span> <span class="kd">implements</span> <span class="n">TransactionalTask</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">Database</span> <span class="n">database</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">database</span><span class="o">.</span><span class="na">backup</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">(</span><span class="n">EntityManager</span> <span class="n">manager</span><span class="o">,</span> <span class="n">Validator</span> <span class="n">validator</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Database</span><span class="o">(</span><span class="n">manager</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<h2>Bean Validation (JSR303)    </h2>
+
+<p>To use these features you only need to put any implementation of Bean Validation jars in your classpath.
+If validation fails the transaction will not be effective. </p>
+
+<div class="highlight">
+<pre><span class="kn">import</span> <span class="nn">br.com.caelum.vraptor.tasks.jobs.jpa.TransactionalTask</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">br.com.caelum.vraptor.tasks.validator.Validator</span><span class="o">;</span>
+
+<span class="nd">@PrototypeScoped</span>
+<span class="nd">@Scheduled</span><span class="o">(</span><span class="n">fixedRate</span> <span class="o">=</span> <span class="mi">60000</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CsvImporter</span> <span class="kd">implements</span> <span class="n">TransactionalTask</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">ClientRepository</span> <span class="n">repository</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">Validator</span> <span class="n">validator</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">CsvFile</span> <span class="n">file</span> <span class="o">=</span> <span class="o">...</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">file</span><span class="o">.</span><span class="na">exists</span><span class="o">()){</span>
+            <span class="k">while</span><span class="o">(</span><span class="n">file</span><span class="o">.</span><span class="na">hasNext</span><span class="o">()){</span>
+                <span class="n">Client</span> <span class="n">client</span> <span class="o">=</span> <span class="o">(</span><span class="n">Client</span><span class="o">)</span> <span class="n">file</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                <span class="n">validator</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="n">client</span><span class="o">);</span>
+                <span class="n">repository</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">client</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">(</span><span class="n">EntityManager</span> <span class="n">manager</span><span class="o">,</span> <span class="n">Validator</span> <span class="n">validator</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClientRepository</span><span class="o">(</span><span class="n">manager</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">validator</span> <span class="o">=</span> <span class="n">validator</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<div class="highlight">
+<pre>
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">client</span> <span class="o">{</span>
+
+    <span class="nd">@Id</span>
+    <span class="nd">@GeneratedValue</span>
+    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="nd">@CreditCardNumber</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">creditCard</span><span class="o">;</span>
+    <span class="o">...</span>
+
+</pre>
+</div>
+
+
+<h2>Manual Scheduling</h2>
+
+<ol>
+<li> Remove @Scheduled annotation</li>
+<li> Create the following component: </li>
+</ol><div class="highlight">
+<pre><span class="nd">@Component</span>
+<span class="nd">@ApplicationScoped</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomScheduler</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="nf">CustomScheduler</span><span class="o">(</span><span class="n">TaskScheduler</span> <span class="n">scheduler</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">&gt;</span> <span class="n">tasks</span><span class="o">){</span>
+        <span class="k">for</span><span class="o">(</span><span class="n">Task</span> <span class="n">task</span> <span class="o">:</span> <span class="n">tasks</span><span class="o">){</span>
+            <span class="n">scheduler</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="n">task</span><span class="o">,</span> <span class="n">customTrigger</span><span class="o">());</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<h2>Tasks and Request Scope</h2>
+
+<p>If you need to access components with request scope, the easiest way is to build your logic into a method of a controller and call it from a task.
+There´s a helper class (TaskRequest) that does it for you. This class finds the path for your method dynamically and performs a get request.</p>
+
+<div class="highlight">
+<pre><span class="nd">@ApplicationScoped</span>
+<span class="nd">@Scheduled</span><span class="o">(</span><span class="n">fixedRate</span> <span class="o">=</span> <span class="mi">5000</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RequestScopeTask</span> <span class="kd">implements</span> <span class="n">Task</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">TaskRequest</span> <span class="n">request</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">RequestScopeTask</span><span class="o">(</span><span class="n">TaskRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">request</span> <span class="o">=</span> <span class="n">request</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">access</span><span class="o">(</span><span class="n">Controller</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">method</span><span class="o">();</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">sucess</span><span class="o">())</span>
+            <span class="n">log</span> <span class="n">something</span><span class="o">...</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<div class="highlight">
+<pre><span class="nd">@Resource</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Controller</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">RequestComponent</span> <span class="n">component</span><span class="o">;</span>
+
+    <span class="n">Controller</span><span class="o">(</span><span class="n">RequestComponent</span> <span class="n">component</span><span class="o">){</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">component</span> <span class="o">=</span> <span class="n">component</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Get</span><span class="o">(</span><span class="s">"task/execute"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">method</span><span class="o">(){</span>
+        <span class="c1">//put task logic here</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<p>If you want to block requests from outside the server, there´s a solution here: <a href="https://gist.github.com/1312993">https://gist.github.com/1312993</a></p>
+
+<h2>Stateful Tasks</h2>
+
+<p>By default, Quartz jobs are stateless, resulting in the possibility of jobs interfering with each other. It might be possible that before the first job has finished, the second one will start. 
+To make tasks non-concurrent, set the concurrent flag to false. This flag ensures that job execution doesn't overlap.
+Example:</p>
+
+<div class="highlight">
+<pre><span class="nd">@Scheduled</span><span class="o">(</span><span class="n">fixedRate</span> <span class="o">=</span> <span class="mi">30000</span><span class="o">,</span> <span class="n">concurrent</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BatchImporter</span> <span class="kd">implements</span> <span class="n">Task</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">()</span> <span class="o">{</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<h2>Controlling Tasks</h2>
+
+<p>Ok, your tasks are scheduled, but sometimes you need control them manually. No problem:</p>
+
+<div class="highlight">
+<pre><span class="nd">@Resource</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TaskController</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">TaskExecutor</span> <span class="n">executor</span><span class="o">;</span>
+
+    <span class="n">TaskController</span><span class="o">(</span><span class="n">TaskExecutor</span> <span class="n">executor</span><span class="o">){</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">executor</span> <span class="o">=</span> <span class="n">executor</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Path</span><span class="o">(</span><span class="s">"task/execute"</span><span class="o">)</span>
+    <span class="kt">void</span> <span class="nf">execute</span><span class="o">(){</span>
+        <span class="n">executor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">MyTask</span><span class="o">.</span><span class="na">class</span><span class="o">);</span> <span class="c1">//execute it now!</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Path</span><span class="o">(</span><span class="s">"task/pause"</span><span class="o">)</span>
+    <span class="kt">void</span> <span class="nf">pause</span><span class="o">(){</span>
+        <span class="n">executor</span><span class="o">.</span><span class="na">pause</span><span class="o">(</span><span class="n">MyTask</span><span class="o">.</span><span class="na">class</span><span class="o">);</span> <span class="c1">//pause associated trigger, no more executions!</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Path</span><span class="o">(</span><span class="s">"..."</span><span class="o">)</span>
+    <span class="kt">void</span> <span class="nf">resume</span><span class="o">(</span><span class="n">Task</span> <span class="n">task</span><span class="o">){</span>
+        <span class="n">executor</span><span class="o">.</span><span class="na">resume</span><span class="o">(</span><span class="n">task</span><span class="o">);</span> <span class="c1">//un-pause associated trigger</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Path</span><span class="o">(</span><span class="s">"tasks/pause"</span><span class="o">)</span>
+    <span class="kt">void</span> <span class="nf">pauseAll</span><span class="o">(){</span>
+        <span class="n">executor</span><span class="o">.</span><span class="na">pauseAll</span><span class="o">();</span> <span class="c1">//pause all triggers (put scheduler in 'remembering' mode)</span>
+        <span class="c1">//all new tasks will be paused as they are added</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Path</span><span class="o">(</span><span class="s">"tasks/resume"</span><span class="o">)</span>
+    <span class="kt">void</span> <span class="nf">resumeAll</span><span class="o">(){</span>
+        <span class="n">executor</span><span class="o">.</span><span class="na">resumeAll</span><span class="o">();</span> <span class="c1">//un-pause all triggers</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<h2>Monitoring Tasks </h2>
+
+<div class="highlight">
+<pre><span class="nd">@Resource</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TasksController</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="nf">TasksController</span><span class="o">(</span><span class="n">TasksMonitor</span> <span class="n">monitor</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">TaskStatistics</span> <span class="n">stats</span> <span class="o">=</span> <span class="n">monitor</span><span class="o">.</span><span class="na">getStatisticsFor</span><span class="o">(</span><span class="n">MyTask</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Fire Time: {}"</span><span class="o">,</span> <span class="n">stats</span><span class="o">.</span><span class="na">getFireTime</span><span class="o">());</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Scheduled Fire Time: {}"</span><span class="o">,</span> <span class="n">stats</span><span class="o">.</span><span class="na">getScheduledFireTime</span><span class="o">());</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Next Fire Time: {}"</span><span class="o">,</span> <span class="n">stats</span><span class="o">.</span><span class="na">getNextFireTime</span><span class="o">());</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Previous Fire Time: {}"</span><span class="o">,</span> <span class="n">stats</span><span class="o">.</span><span class="na">getPreviousFireTime</span><span class="o">());</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Execution Time: {}"</span><span class="o">,</span> <span class="n">stats</span><span class="o">.</span><span class="na">getExecutionTime</span><span class="o">());</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Max Execution Time: {}"</span><span class="o">,</span> <span class="n">stats</span><span class="o">.</span><span class="na">getMaxExecutionTime</span><span class="o">());</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Min Execution Time: {}"</span><span class="o">,</span> <span class="n">stats</span><span class="o">.</span><span class="na">getMinExecutionTime</span><span class="o">());</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Execution Count: {}"</span><span class="o">,</span> <span class="n">stats</span><span class="o">.</span><span class="na">getExecutionCount</span><span class="o">());</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Refire Count: {}"</span><span class="o">,</span> <span class="n">stats</span><span class="o">.</span><span class="na">getRefireCount</span><span class="o">());</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Fail Count: {}"</span><span class="o">,</span> <span class="n">stats</span><span class="o">.</span><span class="na">getFailCount</span><span class="o">());</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Last Fault: {}"</span><span class="o">,</span> <span class="n">stats</span><span class="o">.</span><span class="na">getLastException</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<p>More information?</p>
+
+<div class="highlight">
+<pre><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TaskEventLogger</span> <span class="kd">implements</span> <span class="n">TaskCallback</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">executed</span><span class="o">(</span><span class="n">Class</span> <span class="n">task</span><span class="o">,</span> <span class="n">TaskStatistics</span> <span class="n">stats</span><span class="o">){</span> <span class="o">...</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">scheduled</span><span class="o">(</span><span class="n">Class</span> <span class="n">task</span><span class="o">,</span> <span class="n">Trigger</span> <span class="n">trigger</span><span class="o">){</span> <span class="o">...</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">unscheduled</span><span class="o">(</span><span class="n">Class</span> <span class="n">task</span><span class="o">){</span> <span class="o">...</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failed</span><span class="o">(</span><span class="n">Class</span> <span class="n">task</span><span class="o">,</span> <span class="n">TaskStatistics</span> <span class="n">stats</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">error</span><span class="o">){</span> <span class="o">...</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">paused</span><span class="o">(</span><span class="n">Class</span> <span class="n">task</span><span class="o">){</span> <span class="o">...</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">resumed</span><span class="o">(</span><span class="n">Class</span> <span class="n">task</span><span class="o">){</span> <span class="o">...</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">beforeExecute</span><span class="o">(</span><span class="n">Class</span> <span class="n">task</span><span class="o">){</span> <span class="o">...</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">executionVetoed</span><span class="o">(</span><span class="n">Class</span> <span class="n">task</span><span class="o">){</span> <span class="o">...</span> <span class="o">}</span>
+
+    <span class="o">...</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<h2>Creating Custom Tasks </h2>
+
+<p>To create custom tasks: </p>
+
+<ol>
+<li> Create an interface that extends <code>br.com.caelum.vraptor.tasks.Task</code>
+</li>
+</ol><div class="highlight">
+<pre><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">InterruptableTask</span> <span class="kd">extends</span> <span class="n">Task</span> <span class="o">{</span>
+    <span class="kt">void</span> <span class="nf">interrupt</span><span class="o">();</span>   
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<ol>
+<li> Create a class that decorate the execution of its task (must implement <code>org.quartz.Job</code>)</li>
+</ol><div class="highlight">
+<pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">InterruptableJobWrapper</span> <span class="kd">implements</span> <span class="n">InterruptableJob</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">InterruptableTask</span> <span class="n">delegate</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">InterruptableJobWrapper</span><span class="o">(</span><span class="n">InterruptableTask</span> <span class="n">delegate</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">delegate</span> <span class="o">=</span> <span class="n">delegate</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">(</span><span class="n">JobExecutionContext</span> <span class="n">context</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">JobExecutionException</span> <span class="o">{</span>
+        <span class="n">delegate</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">interrupt</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">UnableToInterruptJobException</span> <span class="o">{</span>
+        <span class="n">delegate</span><span class="o">.</span><span class="na">interrupt</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<ol>
+<li> Create a class that provides its task (must implement <code>br.com.caelum.vraptor.tasks.jobs.JobProvider</code>)</li>
+</ol><div class="highlight">
+<pre><span class="nd">@Component</span>
+<span class="nd">@ApplicationScoped</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">InterruptableTaskProvider</span> <span class="kd">implements</span> <span class="n">JobProvider</span> <span class="o">{</span>
+
+    <span class="c1">//Should only instantiate your custom job</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">canProvide</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Job</span><span class="o">&gt;</span> <span class="n">job</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">InterruptableJobWrapper</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">job</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">//Should only decorate your custom task</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">canDecorate</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Task</span><span class="o">&gt;</span> <span class="n">task</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">InterruptableTask</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">task</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">//Register your wrapper </span>
+    <span class="kd">public</span> <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Job</span><span class="o">&gt;</span> <span class="n">getJobWrapper</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">InterruptableJobWrapper</span><span class="o">.</span><span class="na">class</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">//Delegates the execution to your wrapper</span>
+    <span class="kd">public</span> <span class="n">Job</span> <span class="nf">newJob</span><span class="o">(</span><span class="n">Task</span> <span class="n">task</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">InterruptableJobWrapper</span><span class="o">((</span><span class="n">InterruptableTask</span><span class="o">)</span> <span class="n">task</span><span class="o">);</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<ol>
+<li> Now we are ready to do some cool task</li>
+</ol><div class="highlight">
+<pre><span class="nd">@ApplicationScoped</span>
+<span class="nd">@Scheduled</span><span class="o">(</span><span class="n">fixedRate</span> <span class="o">=</span> <span class="mi">60000</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuntimeProcessTask</span> <span class="kd">implements</span> <span class="n">InterruptableTask</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Runtime</span> <span class="n">runtime</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">RuntimeProcessTask</span><span class="o">(</span><span class="n">Runtime</span> <span class="n">runtime</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">runtime</span> <span class="o">=</span> <span class="n">runtime</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">runtime</span><span class="o">.</span><span class="na">exec</span><span class="o">(</span><span class="s">"ping <a href="http://www.google.com">www.google.com</a>"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">interrupt</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">runtime</span><span class="o">.</span><span class="na">kill</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<h2>License</h2>
+
+<p>Copyright (c) 2011 William Pivotto
+All rights reserved.</p>
+
+<p>Licensed under the Apache License, Version 2.0 (the "License"); 
+you may not use this file except in compliance with the License. 
+You may obtain a copy of the License at </p>
+
+<p><a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a> </p>
+
+<p>Unless required by applicable law or agreed to in writing, software 
+distributed under the License is distributed on an "AS IS" BASIS, 
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+See the License for the specific language governing permissions and 
+limitations under the License.</p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/wpivotto">wpivotto</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
