@@ -25,7 +25,7 @@ Installation
 <dependency>
   	<groupId>br.com.prixma</groupId>
   	<artifactId>vraptor-tasks</artifactId>
-  	<version>1.0.1</version>
+  	<version>1.0.2</version>
 </dependency>
 ```
   
@@ -153,63 +153,61 @@ Manual Scheduling
 @ApplicationScoped
 public class CustomScheduler {
 
-	public CustomScheduler(TaskScheduler scheduler, List<Task> tasks){
-		for(Task task : tasks){
-			scheduler.schedule(task, customTrigger());
-		}
+	public CustomScheduler(TaskScheduler scheduler){
+		scheduler.schedule(mytask.class, customTrigger(), "taskKey");
 	}
 }
 ```
+
+You can schedule a task dynamically with different triggers. For that you should schedule your task with a unique identifier.
+
+Identifying Tasks
+--------
+
+The quartz scheduler requires that every task has a unique identifier. You can specify the identifier of the task as follows:
+
+```java
+@Scheduled(fixedRate = 5000, key = "myKey")
+public class MyTask implements Task {
+```
+
+*If no value has been set, the scheduler will use the `class name` as an identifier.*
+
 	
 Tasks and Request Scope
 --------
 
-If you need to access components with request scope, the easiest way is to build your logic into a method of a controller and call it from a task.
-There´s a helper class (TaskRequest) that does it for you. This class finds the path for your method dynamically and performs a get request.
+Tasks should only be scheduled using `@ApplicationScoped` or `@PrototypeScoped` scopes. 
+If your task depends on `@RequestScoped` components, you can annotate a method of your controller that will be invoked automatically.
 
 ```java
-@ApplicationScoped
-@Scheduled(fixedRate = 5000)
-public class RequestScopeTask implements Task {
-
-	private final TaskRequest request;
-	
-	public RequestScopeTask(TaskRequest request) {
-		this.request = request;
-	}
-
-	public void execute() {
-		request.access(Controller.class).method();
-		if(request.sucess())
-			log something...
-	}
-}
-```
-
-```java	
 @Resource
-public class Controller {
+public class TaskController {
+
+	private final Result result;
 	
-	private RequestComponent component;
-		
-	Controller(RequestComponent component){
-		this.component = component;
+	public TaskController(Result result) {
+		this.result = result;
 	}
-	
-	@Get("task/execute")
-	public void method(){
-		//put task logic here
+
+    @Scheduled(fixedRate = 1500)
+	public void execute() {
+		//put your task logic here
+		result.nothing();
 	}
 }
 ```
-	
-If you want to block requests from outside the server, there´s a solution here: <https://gist.github.com/1312993>
+
+This works because this plugin finds the route to the method and schedule a task that dynamically invokes the associated URL.
+This type of task are scheduled **only when the server receives the first request**. Only in this way the plugin can assemble the full path to the method (retrieving the scheme, protocol, port ...). <br>
+
+*Obs: for security, all calls to this method from outside the server are blocked.*
 
 Stateful Tasks
 --------
 
-By default, Quartz jobs are stateless, resulting in the possibility of jobs interfering with each other. It might be possible that before the first job has finished, the second one will start. 
-To make tasks non-concurrent, set the concurrent flag to false. This flag ensures that job execution doesn't overlap.
+By default, Quartz jobs are `stateless`, resulting in the possibility of jobs interfering with each other. It might be possible that before the first job has finished, the second one will start. 
+To make tasks non-concurrent, set the concurrent flag to `false`. This flag ensures that job execution doesn't overlap.
 Example:
 
 ```java
@@ -237,19 +235,19 @@ public class TaskController {
 		this.executor = executor;
 	}
 	
-	@Path("task/execute")
-	void execute(){
-		executor.execute(MyTask.class); //execute it now!
+	@Path("task/{key}/execute")
+	void execute(String key){
+		executor.execute(key); //execute it now!
 	}
 
-	@Path("task/pause")
-	void pause(){
-		executor.pause(MyTask.class); //pause associated trigger, no more executions!
+	@Path("task/{key}/pause")
+	void pause(String key){
+		executor.pause(key); //pause associated trigger, no more executions!
 	}
 	
-	@Path("...")
-	void resume(Task task){
-		executor.resume(task); //un-pause associated trigger
+	@Path("task/{key}/resume")
+	void resume(String key){
+		executor.resume(key); //un-pause associated trigger
 	}
 	
 	@Path("tasks/pause")
