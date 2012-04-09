@@ -22,11 +22,12 @@ import com.google.common.collect.Maps;
 
 @Component
 @ApplicationScoped
+@SuppressWarnings("unchecked")
 public class TasksMonitor implements JobListener, SchedulerListener {
 	
 	private final TaskEventNotifier notifier;
 	private Scheduler scheduler;
-	private Map<String, TaskStatistics> statistics = Maps.newHashMap();
+	private Map<Class<? extends Task>, TaskStatistics> statistics = Maps.newHashMap();
 
 	public TasksMonitor(TaskEventNotifier notifier){
 		this.notifier = notifier;
@@ -41,40 +42,36 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 	}
 
 	public void jobExecutionVetoed(JobExecutionContext context) {
-		notifier.notifyExecutionVetoedEvent(taskClass(context));
+		notifier.notifyExecutionVetoedEvent(taskFrom(context));
 	}
 
 	public void jobToBeExecuted(JobExecutionContext context) {
-		notifier.notifyBeforeExecuteEvent(taskClass(context));
+		notifier.notifyBeforeExecuteEvent(taskFrom(context));
 	}
 
 	public void jobWasExecuted(JobExecutionContext context, JobExecutionException exception) {
 		TaskStatistics stats = updateStats(context, exception);
 		if(exception != null)
-			notifier.notifyFailedEvent(taskClass(context), stats, exception);
+			notifier.notifyFailedEvent(taskFrom(context), stats, exception);
 		else
-			notifier.notifyExecutedEvent(taskClass(context), stats);
+			notifier.notifyExecutedEvent(taskFrom(context), stats);
 	}
 	
 	private TaskStatistics updateStats(JobExecutionContext context, JobExecutionException exception){
-		TaskStatistics stats = getStatisticsFor(taskName(context));
+		TaskStatistics stats = getStatisticsFor(taskFrom(context));
 		stats.update(context, exception);
-		return stats;
-	}
-	
-	public TaskStatistics getStatisticsFor(String taskName){
-		TaskStatistics stats = statistics.get(taskName);
-		if(stats != null)
-			stats.update(scheduler);
 		return stats;
 	}
 
 	public TaskStatistics getStatisticsFor(Task task){
-		return getStatisticsFor(task.getClass().getName());
+		return getStatisticsFor(task.getClass());
 	}
 	
 	public TaskStatistics getStatisticsFor(Class<? extends Task> task){
-		return getStatisticsFor(task.getName());
+		TaskStatistics stats = statistics.get(task);
+		if(stats != null)
+			stats.update(scheduler);
+		return stats;
 	}
 
 	public Collection<TaskStatistics> getStatistics(){
@@ -84,43 +81,36 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 		return statistics.values();
 	}
 	
-	private Class<? extends Task> taskClass(JobExecutionContext context){
-		String taskName = taskName(context);
-		return taskClass(taskName);
+	private Class<? extends Task> taskFrom(JobExecutionContext context){
+		return (Class<? extends Task>) context.getJobDetail().getJobDataMap().get("task");
 	}
 	
-	private String taskName(JobExecutionContext context){
-		return context.getJobDetail().getKey().getName();
-	}
-	
-	@SuppressWarnings("unchecked")
-	private Class<? extends Task> taskClass(String className){
+	private Class<? extends Task> taskFrom(JobKey key){
 		try {
-			return (Class<? extends Task>) Class.forName(className);
-		} catch (ClassNotFoundException e) {
+			return (Class<? extends Task>) scheduler.getJobDetail(key).getJobDataMap().get("task");
+		} catch (SchedulerException e) {
 			throw new IllegalStateException(e);
 		}
 	}
 
 	public void jobScheduled(Trigger trigger) {
-		String taskName = trigger.getJobKey().getName();
-		Class<? extends Task> taskClass = taskClass(taskName);
-		if(!statistics.containsKey(taskName)) {
-			statistics.put(taskName, new TaskStatistics(taskClass, trigger));
+		Class<? extends Task> taskClass = taskFrom(trigger.getJobKey());
+		if(!statistics.containsKey(taskClass)) {
+			statistics.put(taskClass, new TaskStatistics(taskClass, trigger));
 			notifier.notifyScheduledEvent(taskClass, trigger);
 		}
 	}
 	
 	public void jobDeleted(JobKey jobKey) {
-		notifier.notifyUnscheduledEvent(taskClass(jobKey.getName()));
+		notifier.notifyUnscheduledEvent(taskFrom(jobKey));
 	}
 
 	public void jobPaused(JobKey jobKey) {
-		notifier.notifyPausedEvent(taskClass(jobKey.getName()));
+		notifier.notifyPausedEvent(taskFrom(jobKey));
 	}
 
 	public void jobResumed(JobKey jobKey) {
-		notifier.notifyResumedEvent(taskClass(jobKey.getName()));
+		notifier.notifyResumedEvent(taskFrom(jobKey));
 	}
 	
 	public void jobsPaused(String jobGroup) {}

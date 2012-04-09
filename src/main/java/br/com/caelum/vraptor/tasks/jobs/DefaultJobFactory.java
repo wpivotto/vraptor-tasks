@@ -31,10 +31,15 @@ public class DefaultJobFactory implements JobFactory {
 
 		JobDetail detail = bundle.getJobDetail();
 		JobProvider provider = providers.getProvider(detail.getJobClass());
-		Task task = factory.newTask(detail.getKey().getName());
+		Task task = factory.newTask(taskClass(detail));
 		logger.debug("Using {} to provide {}", provider.getClass().getName(), task.getClass().getName());
 		return provider.newJob(task, task.getClass().getAnnotation(Scheduled.class));
 
+	}
+
+	@SuppressWarnings("unchecked")
+	private Class<? extends Task> taskClass(JobDetail detail) {
+		return (Class<? extends Task>) detail.getJobDataMap().get("task");
 	}
 
 }

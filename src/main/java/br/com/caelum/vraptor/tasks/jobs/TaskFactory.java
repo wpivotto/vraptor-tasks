@@ -15,13 +15,12 @@ public class TaskFactory {
 		this.container = container;
 	}
 	
-	public Task newTask(String className) {
+	public Task newTask(Class<? extends Task> taskClass) {
 		try {
-			Class<?> clazz = Class.forName(className);
-			if(container.canProvide(clazz))
-				return (Task) container.instanceFor(clazz);
+			if(container.canProvide(taskClass))
+				return (Task) container.instanceFor(taskClass);
 			else
-				return (Task) clazz.getDeclaredConstructor().newInstance();
+				return (Task) taskClass.getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

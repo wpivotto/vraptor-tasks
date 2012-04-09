@@ -30,10 +30,11 @@ public class QuartzScheduler implements TaskScheduler {
 		this.providers = providers;
 	}
 
-	public void schedule(Task task, Trigger trigger) {
+	public void schedule(Class<? extends Task> task, Trigger trigger, String key) {
 
-		JobDetail detail = newJob(getJobClass(task)).withIdentity(task.getClass().getName()).build();
-
+		JobDetail detail = newJob(jobFor(task)).withIdentity(key).build();
+		detail.getJobDataMap().put("task", task);
+		
 		try {
 			quartz.scheduleJob(detail, trigger);
 		} catch (SchedulerException e) {
@@ -42,12 +43,12 @@ public class QuartzScheduler implements TaskScheduler {
 
 	}
 
-	private Class<? extends Job> getJobClass(Task task) {
+	private Class<? extends Job> jobFor(Class<? extends Task> task) {
 	
-		Scheduled options = task.getClass().getAnnotation(Scheduled.class);
+		Scheduled options = task.getAnnotation(Scheduled.class);
 		
 		for(JobProvider provider : providers){
-			if(provider.canDecorate(task.getClass()))
+			if(provider.canDecorate(task))
 				return provider.getJobWrapper(options);
 		}
 		
@@ -55,10 +56,14 @@ public class QuartzScheduler implements TaskScheduler {
 		
 	}
 
-	public void unschedule(Task task) throws SchedulerException {
-		JobKey key = new JobKey(task.getClass().getName());
-		if (quartz.checkExists(key))
-			quartz.deleteJob(key);
+	public void unschedule(String key) {
+		JobKey jobKey = new JobKey(key);
+		try {
+			if (quartz.checkExists(jobKey))
+				quartz.deleteJob(jobKey);
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
