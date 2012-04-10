@@ -19,7 +19,7 @@ import com.google.common.collect.Lists;
 
 public class TaskStatistics {
 	
-	private final Class<? extends Task> task;
+	private final String task;
 	private final Trigger trigger;
 	private TriggerState triggerState;
 	private Date fireTime;
@@ -34,18 +34,14 @@ public class TaskStatistics {
 	private int failCount;
 	private Throwable lastException;
 	
-	public TaskStatistics(Class<? extends Task> task, Trigger trigger) {
+	public TaskStatistics(String task, Trigger trigger) {
 		this.task = task;
 		this.trigger = trigger;
 		this.scheduledFireTime = trigger.getStartTime();
 	}
 	
-	public Class<? extends Task> getTask() {
+	public String getTask() {
 		return task;
-	}
-
-	public String getTaskName() {
-		return task.getName();
 	}
 
 	public Date getFireTime() {

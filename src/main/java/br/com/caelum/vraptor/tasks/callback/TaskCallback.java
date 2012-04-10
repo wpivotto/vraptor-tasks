@@ -2,26 +2,24 @@ package br.com.caelum.vraptor.tasks.callback;
 
 import org.quartz.Trigger;
 
-import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.TaskStatistics;
-
 
 public interface TaskCallback {
 	
-	void scheduled(Class<? extends Task> task, Trigger trigger);
+	void scheduled(String taskKey, Trigger trigger);
 	
-	void unscheduled(Class<? extends Task> task);
+	void unscheduled(String taskKey);
 	
-	void beforeExecute(Class<? extends Task> task);
+	void beforeExecute(String taskKey);
 	
-	void executionVetoed(Class<? extends Task> task);
+	void executionVetoed(String taskKey);
 	
-	void executed(Class<? extends Task> task, TaskStatistics stats);
+	void executed(String taskKey, TaskStatistics stats);
 	
-	void failed(Class<? extends Task> task, TaskStatistics stats, Exception error);
+	void failed(String taskKey, TaskStatistics stats, Exception error);
 
-	void paused(Class<? extends Task> task);
+	void paused(String taskKey);
 
-	void resumed(Class<? extends Task> task);
+	void resumed(String taskKey);
 
 }

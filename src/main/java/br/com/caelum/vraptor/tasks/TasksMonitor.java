@@ -27,7 +27,7 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 	
 	private final TaskEventNotifier notifier;
 	private Scheduler scheduler;
-	private Map<Class<? extends Task>, TaskStatistics> statistics = Maps.newHashMap();
+	private Map<String, TaskStatistics> statistics = Maps.newHashMap();
 
 	public TasksMonitor(TaskEventNotifier notifier){
 		this.notifier = notifier;
@@ -62,13 +62,9 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 		stats.update(context, exception);
 		return stats;
 	}
-
-	public TaskStatistics getStatisticsFor(Task task){
-		return getStatisticsFor(task.getClass());
-	}
 	
-	public TaskStatistics getStatisticsFor(Class<? extends Task> task){
-		TaskStatistics stats = statistics.get(task);
+	public TaskStatistics getStatisticsFor(String taskKey){
+		TaskStatistics stats = statistics.get(taskKey);
 		if(stats != null)
 			stats.update(scheduler);
 		return stats;
@@ -81,23 +77,23 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 		return statistics.values();
 	}
 	
-	private Class<? extends Task> taskFrom(JobExecutionContext context){
-		return (Class<? extends Task>) context.getJobDetail().getJobDataMap().get("task");
+	private String taskFrom(JobExecutionContext context){
+		return context.getJobDetail().getJobDataMap().getString("task-key");
 	}
 	
-	private Class<? extends Task> taskFrom(JobKey key){
+	private String taskFrom(JobKey key){
 		try {
-			return (Class<? extends Task>) scheduler.getJobDetail(key).getJobDataMap().get("task");
+			return scheduler.getJobDetail(key).getJobDataMap().getString("task-key");
 		} catch (SchedulerException e) {
 			throw new IllegalStateException(e);
 		}
 	}
 
 	public void jobScheduled(Trigger trigger) {
-		Class<? extends Task> taskClass = taskFrom(trigger.getJobKey());
-		if(!statistics.containsKey(taskClass)) {
-			statistics.put(taskClass, new TaskStatistics(taskClass, trigger));
-			notifier.notifyScheduledEvent(taskClass, trigger);
+		String key = taskFrom(trigger.getJobKey());
+		if(!statistics.containsKey(key)) {
+			statistics.put(key, new TaskStatistics(key, trigger));
+			notifier.notifyScheduledEvent(key, trigger);
 		}
 	}
 	

@@ -34,6 +34,7 @@ public class QuartzScheduler implements TaskScheduler {
 
 		JobDetail detail = newJob(jobFor(task)).withIdentity(key).build();
 		detail.getJobDataMap().put("task", task);
+		detail.getJobDataMap().put("task-key", key);
 		
 		try {
 			quartz.scheduleJob(detail, trigger);

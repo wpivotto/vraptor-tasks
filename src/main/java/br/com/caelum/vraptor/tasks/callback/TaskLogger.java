@@ -18,43 +18,43 @@ public class TaskLogger implements TaskCallback {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public void scheduled(Class<? extends Task> task, Trigger trigger) {
-		logger.debug("Task {} was successfully scheduled. Trigger Expression {}", task.getName(), triggerInfo(trigger));
+	public void scheduled(String taskKey, Trigger trigger) {
+		logger.debug("Task {} was successfully scheduled. Trigger Expression {}", taskKey, triggerInfo(trigger));
 	}
 
 	@Override
-	public void unscheduled(Class<? extends Task> task) {
-		logger.debug("Task {} was successfully unscheduled", task.getName());
+	public void unscheduled(String taskKey) {
+		logger.debug("Task {} was successfully unscheduled", taskKey);
 	}
 
 	@Override
-	public void beforeExecute(Class<? extends Task> task) {
-		logger.debug("Executing task {}", task.getName());
+	public void beforeExecute(String taskKey) {
+		logger.debug("Executing task {}", taskKey);
 	}
 
 	@Override
-	public void executionVetoed(Class<? extends Task> task) {
-		logger.debug("Task {} execution was vetoed", task.getName());
+	public void executionVetoed(String taskKey) {
+		logger.debug("Task {} execution was vetoed", taskKey);
 	}
 
 	@Override
-	public void executed(Class<? extends Task> task, TaskStatistics stats) {
-		logger.debug("Task {} was successfully executed", task.getName());
+	public void executed(String taskKey, TaskStatistics stats) {
+		logger.debug("Task {} was successfully executed", taskKey);
 	}
 	
 	@Override
-	public void failed(Class<? extends Task> task, TaskStatistics stats, Exception error) {
-		logger.error("Task" + task.getName() + " was failed", error);
+	public void failed(String taskKey, TaskStatistics stats, Exception error) {
+		logger.error("Task" + taskKey + " was failed", error.getCause());
 	}
 
 	@Override
-	public void paused(Class<? extends Task> task) {
-		logger.debug("Task {} was paused", task.getName());
+	public void paused(String taskKey) {
+		logger.debug("Task {} was paused", taskKey);
 	}
 
 	@Override
-	public void resumed(Class<? extends Task> task) {
-		logger.debug("Task {} was resumed", task.getName());
+	public void resumed(String taskKey) {
+		logger.debug("Task {} was resumed", taskKey);
 	}
 	
 	private String triggerInfo(Trigger trigger){

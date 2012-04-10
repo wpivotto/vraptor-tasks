@@ -19,51 +19,51 @@ public class TaskEventNotifier {
 		this.listeners = listeners;
 	}
 	
-	public void notifyScheduledEvent(Class<? extends Task> task, Trigger trigger){
+	public void notifyScheduledEvent(String taskKey, Trigger trigger){
 		for(TaskCallback listener : listeners){
-			listener.scheduled(task, trigger);
+			listener.scheduled(taskKey, trigger);
 		}
 	}
 
-	public void notifyUnscheduledEvent(Class<? extends Task> task){
+	public void notifyUnscheduledEvent(String taskKey){
 		for(TaskCallback listener : listeners){
-			listener.unscheduled(task);
+			listener.unscheduled(taskKey);
 		}
 	}
 	
-	public void notifyBeforeExecuteEvent(Class<? extends Task> task){
+	public void notifyBeforeExecuteEvent(String taskKey){
 		for(TaskCallback listener : listeners){
-			listener.beforeExecute(task);
+			listener.beforeExecute(taskKey);
 		}
 	}
 	
-	public void notifyExecutionVetoedEvent(Class<? extends Task> task){
+	public void notifyExecutionVetoedEvent(String taskKey){
 		for(TaskCallback listener : listeners){
-			listener.executionVetoed(task);
+			listener.executionVetoed(taskKey);
 		}
 	}
 	
-	public void notifyExecutedEvent(Class<? extends Task> task, TaskStatistics stats){
+	public void notifyExecutedEvent(String taskKey, TaskStatistics stats){
 		for(TaskCallback listener : listeners){
-			listener.executed(task, stats);
+			listener.executed(taskKey, stats);
 		}
 	}
 	
-	public void notifyPausedEvent(Class<? extends Task> task){
+	public void notifyPausedEvent(String taskKey){
 		for(TaskCallback listener : listeners){
-			listener.paused(task);
+			listener.paused(taskKey);
 		}
 	}
 	
-	public void notifyResumedEvent(Class<? extends Task> task){
+	public void notifyResumedEvent(String taskKey){
 		for(TaskCallback listener : listeners){
-			listener.resumed(task);
+			listener.resumed(taskKey);
 		}
 	}
 
-	public void notifyFailedEvent(Class<? extends Task> task, TaskStatistics stats, Exception exception) {
+	public void notifyFailedEvent(String taskKey, TaskStatistics stats, Exception exception) {
 		for(TaskCallback listener : listeners){
-			listener.failed(task, stats, exception);
+			listener.failed(taskKey, stats, exception);
 		}
 	}
 }
