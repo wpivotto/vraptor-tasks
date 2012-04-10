@@ -154,7 +154,7 @@ Manual Scheduling
 public class CustomScheduler {
 
 	public CustomScheduler(TaskScheduler scheduler){
-		scheduler.schedule(mytask.class, customTrigger(), "taskKey");
+		scheduler.schedule(mytask.class, customTrigger(), taskId());
 	}
 }
 ```
@@ -167,7 +167,7 @@ Identifying Tasks
 The quartz scheduler requires that every task has a unique identifier. You can specify the identifier of the task as follows:
 
 ```java
-@Scheduled(fixedRate = 5000, key = "myKey")
+@Scheduled(fixedRate = 5000, id = "...")
 public class MyTask implements Task {
 ```
 
@@ -235,19 +235,19 @@ public class TaskController {
 		this.executor = executor;
 	}
 	
-	@Path("task/{key}/execute")
-	void execute(String key){
-		executor.execute(key); //execute it now!
+	@Path("task/{taskId}/execute")
+	void execute(String taskId){
+		executor.execute(taskId); //execute it now!
 	}
 
-	@Path("task/{key}/pause")
-	void pause(String key){
-		executor.pause(key); //pause associated trigger, no more executions!
+	@Path("task/{taskId}/pause")
+	void pause(String taskId){
+		executor.pause(taskId); //pause associated trigger, no more executions!
 	}
 	
-	@Path("task/{key}/resume")
-	void resume(String key){
-		executor.resume(key); //un-pause associated trigger
+	@Path("task/{taskId}/resume")
+	void resume(String taskId){
+		executor.resume(taskId); //un-pause associated trigger
 	}
 	
 	@Path("tasks/pause")
@@ -269,8 +269,11 @@ Monitoring Tasks
 @Resource
 public class TasksController {
 
-	public TasksController(TasksMonitor monitor) {
-		TaskStatistics stats = monitor.getStatisticsFor(MyTask.class);
+	private final TasksMonitor monitor;
+	
+	@Path("task/{taskId}/stats")
+	public void statsFor(String taskId) {
+		TaskStatistics stats = monitor.getStatisticsFor(taskId);
 		log.debug("Fire Time: {}", stats.getFireTime());
 		log.debug("Scheduled Fire Time: {}", stats.getScheduledFireTime());
 		log.debug("Next Fire Time: {}", stats.getNextFireTime());
@@ -292,21 +295,21 @@ More information?
 @Component
 public class TaskEventLogger implements TaskCallback {
 
-	public void executed(Class task, TaskStatistics stats){ ... }
+	public void executed(String taskId, TaskStatistics stats){ ... }
 	
-	public void scheduled(Class task, Trigger trigger){ ... }
+	public void scheduled(String taskId, Trigger trigger){ ... }
 	
-	public void unscheduled(Class task){ ... }
+	public void unscheduled(String taskId){ ... }
 	
-	public void failed(Class task, TaskStatistics stats, Exception error){ ... }
+	public void failed(String taskId, TaskStatistics stats, Exception error){ ... }
 	
-	public void paused(Class task){ ... }
+	public void paused(String taskId){ ... }
 	
-	public void resumed(Class task){ ... }
+	public void resumed(String taskId){ ... }
 	
-	public void beforeExecute(Class task){ ... }
+	public void beforeExecute(String taskId){ ... }
 	
-	public void executionVetoed(Class task){ ... }
+	public void executionVetoed(String taskId){ ... }
 	
 	...
 }

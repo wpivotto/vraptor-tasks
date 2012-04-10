@@ -30,11 +30,11 @@ public class QuartzScheduler implements TaskScheduler {
 		this.providers = providers;
 	}
 
-	public void schedule(Class<? extends Task> task, Trigger trigger, String key) {
+	public void schedule(Class<? extends Task> task, Trigger trigger, String id) {
 
-		JobDetail detail = newJob(jobFor(task)).withIdentity(key).build();
-		detail.getJobDataMap().put("task", task);
-		detail.getJobDataMap().put("task-key", key);
+		JobDetail detail = newJob(jobFor(task)).withIdentity(id).build();
+		detail.getJobDataMap().put("task-class", task);
+		detail.getJobDataMap().put("task-id", id);
 		
 		try {
 			quartz.scheduleJob(detail, trigger);

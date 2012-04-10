@@ -6,7 +6,7 @@ import br.com.caelum.vraptor.tasks.Task;
 
 public interface TaskScheduler {
 
-	void schedule(Class<? extends Task> task, Trigger trigger, String key);
-	void unschedule(String key);
+	void schedule(Class<? extends Task> task, Trigger trigger, String taskId);
+	void unschedule(String taskId);
 
 }

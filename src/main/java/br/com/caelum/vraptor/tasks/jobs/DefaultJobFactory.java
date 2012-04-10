@@ -39,7 +39,7 @@ public class DefaultJobFactory implements JobFactory {
 
 	@SuppressWarnings("unchecked")
 	private Class<? extends Task> taskClass(JobDetail detail) {
-		return (Class<? extends Task>) detail.getJobDataMap().get("task");
+		return (Class<? extends Task>) detail.getJobDataMap().get("task-class");
 	}
 
 }

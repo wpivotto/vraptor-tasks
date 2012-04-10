@@ -6,7 +6,6 @@ import org.quartz.Trigger;
 
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.TaskStatistics;
 
 @Component
@@ -19,51 +18,51 @@ public class TaskEventNotifier {
 		this.listeners = listeners;
 	}
 	
-	public void notifyScheduledEvent(String taskKey, Trigger trigger){
+	public void notifyScheduledEvent(String taskId, Trigger trigger){
 		for(TaskCallback listener : listeners){
-			listener.scheduled(taskKey, trigger);
+			listener.scheduled(taskId, trigger);
 		}
 	}
 
-	public void notifyUnscheduledEvent(String taskKey){
+	public void notifyUnscheduledEvent(String taskId){
 		for(TaskCallback listener : listeners){
-			listener.unscheduled(taskKey);
+			listener.unscheduled(taskId);
 		}
 	}
 	
-	public void notifyBeforeExecuteEvent(String taskKey){
+	public void notifyBeforeExecuteEvent(String taskId){
 		for(TaskCallback listener : listeners){
-			listener.beforeExecute(taskKey);
+			listener.beforeExecute(taskId);
 		}
 	}
 	
-	public void notifyExecutionVetoedEvent(String taskKey){
+	public void notifyExecutionVetoedEvent(String taskId){
 		for(TaskCallback listener : listeners){
-			listener.executionVetoed(taskKey);
+			listener.executionVetoed(taskId);
 		}
 	}
 	
-	public void notifyExecutedEvent(String taskKey, TaskStatistics stats){
+	public void notifyExecutedEvent(String taskId, TaskStatistics stats){
 		for(TaskCallback listener : listeners){
-			listener.executed(taskKey, stats);
+			listener.executed(taskId, stats);
 		}
 	}
 	
-	public void notifyPausedEvent(String taskKey){
+	public void notifyPausedEvent(String taskId){
 		for(TaskCallback listener : listeners){
-			listener.paused(taskKey);
+			listener.paused(taskId);
 		}
 	}
 	
-	public void notifyResumedEvent(String taskKey){
+	public void notifyResumedEvent(String taskId){
 		for(TaskCallback listener : listeners){
-			listener.resumed(taskKey);
+			listener.resumed(taskId);
 		}
 	}
 
-	public void notifyFailedEvent(String taskKey, TaskStatistics stats, Exception exception) {
+	public void notifyFailedEvent(String taskId, TaskStatistics stats, Exception exception) {
 		for(TaskCallback listener : listeners){
-			listener.failed(taskKey, stats, exception);
+			listener.failed(taskId, stats, exception);
 		}
 	}
 }

@@ -47,8 +47,8 @@ public class TaskHandler implements StereotypeHandler {
 			if(isEligible(method)){
 				try {
 					Trigger trigger = TriggerBuilder.triggerFor(controller, method);
-					String key = keyFor(controller, method);
-					triggers.put(key, trigger);
+					String id = getId(controller, method);
+					triggers.put(id, trigger);
 				} catch (ParseException e) {
 					throw new IllegalStateException(e);
 				}	
@@ -59,8 +59,8 @@ public class TaskHandler implements StereotypeHandler {
 	public void scheduleTask(Class<? extends Task> task) {
 		try {
 			Trigger trigger = TriggerBuilder.triggerFor(task);
-			String key = keyFor(task);
-			scheduler.schedule(task, trigger, key);
+			String id = getId(task);
+			scheduler.schedule(task, trigger, id);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
@@ -85,15 +85,15 @@ public class TaskHandler implements StereotypeHandler {
 		return true;
 	}
 	
-	private String keyFor(Class<? extends Task> task){
+	private String getId(Class<? extends Task> task){
 		Scheduled params = task.getAnnotation(Scheduled.class);
-		return !params.key().isEmpty() ? params.key() : task.getSimpleName();
+		return !params.id().isEmpty() ? params.id() : task.getSimpleName();
 	}
 	
-	private String keyFor(Class<?> controller, Method method){
+	private String getId(Class<?> controller, Method method){
 		Scheduled params = method.getAnnotation(Scheduled.class);
-		if (!params.key().isEmpty()) 
-			return params.key();
+		if (!params.id().isEmpty()) 
+			return params.id();
 		else
 			return controller.getSimpleName() + "." + method.getName();
 	}

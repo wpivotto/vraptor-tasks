@@ -15,5 +15,5 @@ public @interface Scheduled {
 	int fixedRate() default 0;
 	int initialDelay() default 1000;
 	boolean concurrent() default true;
-	String key() default "";
+	String id() default "";
 }

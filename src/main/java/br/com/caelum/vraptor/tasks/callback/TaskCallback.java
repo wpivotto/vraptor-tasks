@@ -6,20 +6,20 @@ import br.com.caelum.vraptor.tasks.TaskStatistics;
 
 public interface TaskCallback {
 	
-	void scheduled(String taskKey, Trigger trigger);
+	void scheduled(String taskId, Trigger trigger);
 	
-	void unscheduled(String taskKey);
+	void unscheduled(String taskId);
 	
-	void beforeExecute(String taskKey);
+	void beforeExecute(String taskId);
 	
-	void executionVetoed(String taskKey);
+	void executionVetoed(String taskId);
 	
-	void executed(String taskKey, TaskStatistics stats);
+	void executed(String taskId, TaskStatistics stats);
 	
-	void failed(String taskKey, TaskStatistics stats, Exception error);
+	void failed(String taskId, TaskStatistics stats, Exception error);
 
-	void paused(String taskKey);
+	void paused(String taskId);
 
-	void resumed(String taskKey);
+	void resumed(String taskId);
 
 }

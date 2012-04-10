@@ -22,7 +22,6 @@ import com.google.common.collect.Maps;
 
 @Component
 @ApplicationScoped
-@SuppressWarnings("unchecked")
 public class TasksMonitor implements JobListener, SchedulerListener {
 	
 	private final TaskEventNotifier notifier;
@@ -38,33 +37,33 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 	}
 	
 	public String getName() {
-		return getClass().getName();
+		return getClass().getSimpleName();
 	}
 
 	public void jobExecutionVetoed(JobExecutionContext context) {
-		notifier.notifyExecutionVetoedEvent(taskFrom(context));
+		notifier.notifyExecutionVetoedEvent(getId(context));
 	}
 
 	public void jobToBeExecuted(JobExecutionContext context) {
-		notifier.notifyBeforeExecuteEvent(taskFrom(context));
+		notifier.notifyBeforeExecuteEvent(getId(context));
 	}
 
 	public void jobWasExecuted(JobExecutionContext context, JobExecutionException exception) {
 		TaskStatistics stats = updateStats(context, exception);
 		if(exception != null)
-			notifier.notifyFailedEvent(taskFrom(context), stats, exception);
+			notifier.notifyFailedEvent(getId(context), stats, exception);
 		else
-			notifier.notifyExecutedEvent(taskFrom(context), stats);
+			notifier.notifyExecutedEvent(getId(context), stats);
 	}
 	
 	private TaskStatistics updateStats(JobExecutionContext context, JobExecutionException exception){
-		TaskStatistics stats = getStatisticsFor(taskFrom(context));
+		TaskStatistics stats = getStatisticsFor(getId(context));
 		stats.update(context, exception);
 		return stats;
 	}
 	
-	public TaskStatistics getStatisticsFor(String taskKey){
-		TaskStatistics stats = statistics.get(taskKey);
+	public TaskStatistics getStatisticsFor(String taskId){
+		TaskStatistics stats = statistics.get(taskId);
 		if(stats != null)
 			stats.update(scheduler);
 		return stats;
@@ -77,36 +76,36 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 		return statistics.values();
 	}
 	
-	private String taskFrom(JobExecutionContext context){
-		return context.getJobDetail().getJobDataMap().getString("task-key");
+	private String getId(JobExecutionContext context){
+		return context.getJobDetail().getJobDataMap().getString("task-id");
 	}
 	
-	private String taskFrom(JobKey key){
+	private String getId(JobKey key){
 		try {
-			return scheduler.getJobDetail(key).getJobDataMap().getString("task-key");
+			return scheduler.getJobDetail(key).getJobDataMap().getString("task-id");
 		} catch (SchedulerException e) {
 			throw new IllegalStateException(e);
 		}
 	}
 
 	public void jobScheduled(Trigger trigger) {
-		String key = taskFrom(trigger.getJobKey());
-		if(!statistics.containsKey(key)) {
-			statistics.put(key, new TaskStatistics(key, trigger));
-			notifier.notifyScheduledEvent(key, trigger);
+		String id = getId(trigger.getJobKey());
+		if(!statistics.containsKey(id)) {
+			statistics.put(id, new TaskStatistics(id, trigger));
+			notifier.notifyScheduledEvent(id, trigger);
 		}
 	}
 	
 	public void jobDeleted(JobKey jobKey) {
-		notifier.notifyUnscheduledEvent(taskFrom(jobKey));
+		notifier.notifyUnscheduledEvent(getId(jobKey));
 	}
 
 	public void jobPaused(JobKey jobKey) {
-		notifier.notifyPausedEvent(taskFrom(jobKey));
+		notifier.notifyPausedEvent(getId(jobKey));
 	}
 
 	public void jobResumed(JobKey jobKey) {
-		notifier.notifyResumedEvent(taskFrom(jobKey));
+		notifier.notifyResumedEvent(getId(jobKey));
 	}
 	
 	public void jobsPaused(String jobGroup) {}

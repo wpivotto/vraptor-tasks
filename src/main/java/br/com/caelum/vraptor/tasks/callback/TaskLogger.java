@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.TaskStatistics;
 
 @Component
@@ -18,43 +17,43 @@ public class TaskLogger implements TaskCallback {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public void scheduled(String taskKey, Trigger trigger) {
-		logger.debug("Task {} was successfully scheduled. Trigger Expression {}", taskKey, triggerInfo(trigger));
+	public void scheduled(String taskId, Trigger trigger) {
+		logger.debug("Task {} was successfully scheduled. Trigger Expression {}", taskId, triggerInfo(trigger));
 	}
 
 	@Override
-	public void unscheduled(String taskKey) {
-		logger.debug("Task {} was successfully unscheduled", taskKey);
+	public void unscheduled(String taskId) {
+		logger.debug("Task {} was successfully unscheduled", taskId);
 	}
 
 	@Override
-	public void beforeExecute(String taskKey) {
-		logger.debug("Executing task {}", taskKey);
+	public void beforeExecute(String taskId) {
+		logger.debug("Executing task {}", taskId);
 	}
 
 	@Override
-	public void executionVetoed(String taskKey) {
-		logger.debug("Task {} execution was vetoed", taskKey);
+	public void executionVetoed(String taskId) {
+		logger.debug("Task {} execution was vetoed", taskId);
 	}
 
 	@Override
-	public void executed(String taskKey, TaskStatistics stats) {
-		logger.debug("Task {} was successfully executed", taskKey);
+	public void executed(String taskId, TaskStatistics stats) {
+		logger.debug("Task {} was successfully executed", taskId);
 	}
 	
 	@Override
-	public void failed(String taskKey, TaskStatistics stats, Exception error) {
-		logger.error("Task" + taskKey + " was failed", error.getCause());
+	public void failed(String taskId, TaskStatistics stats, Exception error) {
+		logger.error("Task" + taskId + " was failed", error.getCause());
 	}
 
 	@Override
-	public void paused(String taskKey) {
-		logger.debug("Task {} was paused", taskKey);
+	public void paused(String taskId) {
+		logger.debug("Task {} was paused", taskId);
 	}
 
 	@Override
-	public void resumed(String taskKey) {
-		logger.debug("Task {} was resumed", taskKey);
+	public void resumed(String taskId) {
+		logger.debug("Task {} was resumed", taskId);
 	}
 	
 	private String triggerInfo(Trigger trigger){

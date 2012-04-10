@@ -17,20 +17,20 @@ public class DefaultExecutor implements TaskExecutor {
 		this.quartz = quartz;
 	}
 	
-	private JobKey getKey(String taskKey){
-		return new JobKey(taskKey);
+	private JobKey getKey(String taskId){
+		return new JobKey(taskId);
 	}
 	
-	public void execute(String taskKey) throws SchedulerException {
-		quartz.triggerJob(getKey(taskKey));
+	public void execute(String taskId) throws SchedulerException {
+		quartz.triggerJob(getKey(taskId));
 	}
 	
-	public void pause(String taskKey) throws SchedulerException {
-		quartz.pauseJob(getKey(taskKey));
+	public void pause(String taskId) throws SchedulerException {
+		quartz.pauseJob(getKey(taskId));
 	}
 
-	public void resume(String taskKey) throws SchedulerException {
-		quartz.resumeJob(getKey(taskKey));
+	public void resume(String taskId) throws SchedulerException {
+		quartz.resumeJob(getKey(taskId));
 	}
 
 	public void pauseAll() throws SchedulerException {
