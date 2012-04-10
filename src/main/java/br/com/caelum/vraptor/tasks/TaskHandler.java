@@ -47,7 +47,7 @@ public class TaskHandler implements StereotypeHandler {
 			if(isEligible(method)){
 				try {
 					Trigger trigger = TriggerBuilder.triggerFor(controller, method);
-					String key = keyFor(method);
+					String key = keyFor(controller, method);
 					triggers.put(key, trigger);
 				} catch (ParseException e) {
 					throw new IllegalStateException(e);
@@ -87,12 +87,15 @@ public class TaskHandler implements StereotypeHandler {
 	
 	private String keyFor(Class<? extends Task> task){
 		Scheduled params = task.getAnnotation(Scheduled.class);
-		return !params.key().isEmpty() ? params.key() : task.getName();
+		return !params.key().isEmpty() ? params.key() : task.getSimpleName();
 	}
 	
-	private String keyFor(Method method){
+	private String keyFor(Class<?> controller, Method method){
 		Scheduled params = method.getAnnotation(Scheduled.class);
-		return !params.key().isEmpty() ? params.key() : TriggerBuilder.randomKey();
+		if (!params.key().isEmpty()) 
+			return params.key();
+		else
+			return controller.getSimpleName() + "." + method.getName();
 	}
 	
 	public Set<Entry<String, Trigger>> requestScopedTasks(){
