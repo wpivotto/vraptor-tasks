@@ -7,6 +7,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.PersistJobDataAfterExecution;
 
 import br.com.caelum.vraptor.tasks.Task;
+import br.com.caelum.vraptor.tasks.jobs.TaskExecutionException;
 
 @DisallowConcurrentExecution
 @PersistJobDataAfterExecution
@@ -19,7 +20,11 @@ public class StatefulJobWrapper implements Job {
 	}
 
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		task.execute();
+		try { 
+			task.execute();
+		} catch (Exception e) {
+			throw new TaskExecutionException(e);
+		}
 	}
 
 }

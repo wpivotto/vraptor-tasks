@@ -5,6 +5,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import br.com.caelum.vraptor.tasks.Task;
+import br.com.caelum.vraptor.tasks.jobs.TaskExecutionException;
 
 public class ConcurrentJobWrapper implements Job {
 
@@ -15,7 +16,11 @@ public class ConcurrentJobWrapper implements Job {
 	}
 
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		task.execute();
+		try { 
+			task.execute();
+		} catch (Exception e) {
+			throw new TaskExecutionException(e);
+		}
 	}
 
 }

@@ -4,6 +4,7 @@ package br.com.caelum.vraptor.tasks.jobs.hibernate;
 import org.hibernate.Transaction;
 import org.hibernate.classic.Session;
 
+import br.com.caelum.vraptor.tasks.jobs.TaskExecutionException;
 import br.com.caelum.vraptor.tasks.validator.Validator;
 
 
@@ -19,7 +20,7 @@ public class TaskLogic {
 		this.task = task;
 	}
 
-	public void execute() {
+	public void execute() throws TaskExecutionException {
 
 		Transaction transaction = null;
 
@@ -30,6 +31,8 @@ public class TaskLogic {
 			if (!validator.hasErrors()) {
 				transaction.commit();
 			}
+		} catch (Exception e) {
+			throw new TaskExecutionException(e);
 		}
 		finally {
 			if (transaction != null && transaction.isActive()) {

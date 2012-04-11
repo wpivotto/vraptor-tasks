@@ -7,6 +7,8 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import br.com.caelum.vraptor.tasks.jobs.TaskExecutionException;
+
 public class RequestScopedJob implements Job {
 
 	private final RequestScopedTask task;
@@ -23,7 +25,7 @@ public class RequestScopedJob implements Job {
 			task.setup(url);
 			task.execute();
 		} catch (Exception e) {
-			throw new JobExecutionException(e);
+			throw new TaskExecutionException(e);
 		}
 		
 	}

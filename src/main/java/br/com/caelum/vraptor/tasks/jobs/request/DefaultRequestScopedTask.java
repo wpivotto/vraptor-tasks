@@ -2,7 +2,6 @@ package br.com.caelum.vraptor.tasks.jobs.request;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 public class DefaultRequestScopedTask implements RequestScopedTask {
@@ -18,8 +17,6 @@ public class DefaultRequestScopedTask implements RequestScopedTask {
 			connection.setAllowUserInteraction(false);
 			HttpURLConnection.setFollowRedirects(false);
 			connection.connect();
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
