@@ -4,6 +4,8 @@ import static org.quartz.JobBuilder.newJob;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -76,6 +78,11 @@ public class QuartzScheduler implements TaskScheduler {
 	
 	private boolean alreadyExists(String id) throws SchedulerException {
 		return quartz.checkExists(new JobKey(id));
+	}
+	
+	@PostConstruct
+	public void setup() {
+		System.setProperty("org.terracotta.quartz.skipUpdateCheck", "true");
 	}
 
 }
