@@ -34,10 +34,11 @@ public class TaskStatistics {
 	private int failCount;
 	private Throwable lastException;
 	
-	public TaskStatistics(String task, Trigger trigger) {
+	public TaskStatistics(String task, JobExecutionContext context) {
 		this.task = task;
-		this.trigger = trigger;
+		this.trigger = context.getTrigger();
 		this.scheduledFireTime = trigger.getStartTime();
+		update(context, null);
 	}
 	
 	public String getTask() {
@@ -170,7 +171,7 @@ public class TaskStatistics {
 		
 	}
 
-	public void update(Scheduler scheduler) {
+	public void updateTriggerState(Scheduler scheduler) {
 		try {
 			this.triggerState = scheduler.getTriggerState(trigger.getKey());
 		} catch (SchedulerException e) {

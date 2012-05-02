@@ -28,11 +28,11 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 	private Scheduler scheduler;
 	private Map<String, TaskStatistics> statistics = Maps.newHashMap();
 
-	public TasksMonitor(TaskEventNotifier notifier){
+	public TasksMonitor(TaskEventNotifier notifier) {
 		this.notifier = notifier;
 	}
 	
-	public void setScheduler(Scheduler scheduler){
+	public void setScheduler(Scheduler scheduler) {
 		this.scheduler = scheduler;
 	}
 	
@@ -49,38 +49,41 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 	}
 
 	public void jobWasExecuted(JobExecutionContext context, JobExecutionException exception) {
-		TaskStatistics stats = updateStats(context, exception);
-		if(exception != null)
-			notifier.notifyFailedEvent(getId(context), stats, exception);
-		else
-			notifier.notifyExecutedEvent(getId(context), stats);
-	}
-	
-	private TaskStatistics updateStats(JobExecutionContext context, JobExecutionException exception){
-		TaskStatistics stats = getStatisticsFor(getId(context));
+		String taskId = getId(context);
+		TaskStatistics stats = findStats(context);
 		stats.update(context, exception);
-		return stats;
+		if(exception != null)
+			notifier.notifyFailedEvent(taskId, stats, exception);
+		else
+			notifier.notifyExecutedEvent(taskId, stats);
 	}
 	
-	public TaskStatistics getStatisticsFor(String taskId){
+	private TaskStatistics findStats(JobExecutionContext context) {
+		String taskId = getId(context);
+		if(!statistics.containsKey(taskId))
+			statistics.put(taskId, new TaskStatistics(taskId, context));
+		return statistics.get(taskId);
+	}
+	
+	public TaskStatistics getStatisticsFor(String taskId) {
 		TaskStatistics stats = statistics.get(taskId);
 		if(stats != null)
-			stats.update(scheduler);
+			stats.updateTriggerState(scheduler);
 		return stats;
 	}
 
-	public Collection<TaskStatistics> getStatistics(){
-		for(TaskStatistics stats : statistics.values()){
-			stats.update(scheduler);
+	public Collection<TaskStatistics> getStatistics() {
+		for(TaskStatistics stats : statistics.values()) {
+			stats.updateTriggerState(scheduler);
 		}
 		return statistics.values();
 	}
 	
-	private String getId(JobExecutionContext context){
+	private String getId(JobExecutionContext context) {
 		return context.getJobDetail().getJobDataMap().getString("task-id");
 	}
 	
-	private String getId(JobKey key){
+	private String getId(JobKey key) {
 		try {
 			return scheduler.getJobDetail(key).getJobDataMap().getString("task-id");
 		} catch (SchedulerException e) {
@@ -89,11 +92,7 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 	}
 
 	public void jobScheduled(Trigger trigger) {
-		String id = getId(trigger.getJobKey());
-		if(!statistics.containsKey(id)) {
-			statistics.put(id, new TaskStatistics(id, trigger));
-			notifier.notifyScheduledEvent(id, trigger);
-		}
+		notifier.notifyScheduledEvent(getId(trigger.getJobKey()), trigger);
 	}
 	
 	public void jobDeleted(JobKey jobKey) {
