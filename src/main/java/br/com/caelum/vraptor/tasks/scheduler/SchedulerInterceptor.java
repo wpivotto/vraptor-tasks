@@ -34,10 +34,9 @@ public class SchedulerInterceptor implements Interceptor {
 	@Override
 	public void intercept(InterceptorStack stack, ResourceMethod method, Object resourceInstance) throws InterceptionException {
 		try {
-			for(Map.Entry<String, Trigger> entry : handler.requestScopedTasks()){
-				Trigger trigger = entry.getValue();
-				buildURI(trigger);
-				scheduler.schedule(DefaultRequestScopedTask.class, trigger, entry.getKey());
+			for(Map.Entry<String, Trigger> entry : handler.requestScopedTasks()) {
+				buildURI(entry.getValue());
+				scheduler.schedule(DefaultRequestScopedTask.class, entry.getValue(), entry.getKey());
 			}
 			handler.markAsScheduled();
 		} catch (Exception e) {
@@ -53,14 +52,21 @@ public class SchedulerInterceptor implements Interceptor {
 	
 	private void buildURI(Trigger trigger) throws Exception {
 		JobDataMap map = trigger.getJobDataMap();
-		Class<?> controller = Class.forName((String) map.get("controller"));
-		Method method = controller.getMethod((String) map.get("method"), new Class[]{});
-		String URI = uriFor(controller, method);
-		trigger.getJobDataMap().put("task-uri", URI);
+		Class<?> controller = Class.forName(map.getString("task-controller"));
+		String target =  map.getString("task-method");
+		
+		/** TODO: find method by hash */
+		for (Method method : controller.getDeclaredMethods()) {
+			if (method.getName().equals(target)) {
+				String URI = uriFor(controller, method);
+				map.put("task-uri", URI);
+				break;
+			}
+		}
 	}
 	
 	private String uriFor(Class<?> controller, Method method) {
-		String URI = router.urlFor(controller, method, new Object[0]);
+		String URI = router.urlFor(controller, method, new Object[method.getParameterTypes().length]);
 		if (URI.startsWith("/")) {
 			return cfg.getApplicationPath() + URI;
 		}

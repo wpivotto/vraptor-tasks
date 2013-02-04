@@ -2,6 +2,7 @@ package br.com.caelum.vraptor.tasks;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.quartz.Calendar;
 import org.quartz.CronTrigger;
@@ -13,15 +14,17 @@ import org.quartz.Trigger;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.spi.OperableTrigger;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 
 public class TaskStatistics {
 	
 	private final String task;
 	private final Trigger trigger;
-	private TriggerState triggerState;
+	private TriggerState triggerState = TriggerState.NONE;
 	private Date fireTime;
 	private Date scheduledFireTime;
 	private Date nextFireTime;
@@ -33,6 +36,7 @@ public class TaskStatistics {
 	private int refireCount;
 	private int failCount;
 	private Throwable lastException;
+	private Map<String, Object> parameters = Maps.newHashMap();
 	
 	public TaskStatistics(String task, JobExecutionContext context) {
 		this.task = task;
@@ -149,6 +153,14 @@ public class TaskStatistics {
 		return triggerState;
 	}
 	
+	public String getParametersAsString() {
+		return Joiner.on(", <br />").withKeyValueSeparator(" => ").join(parameters);
+	}
+	
+	public Map<String, Object> getParameters() {
+		return parameters;
+	}
+	
 	public void update(JobExecutionContext context, Throwable exception) {
 		
 		this.fireTime = context.getFireTime();
@@ -157,6 +169,7 @@ public class TaskStatistics {
 		this.previousFireTime = context.getPreviousFireTime();
 		this.refireCount = context.getRefireCount();
 		this.executionCount++;
+		this.parameters = context.getMergedJobDataMap().getWrappedMap();
 		
 		if(executionTime > maxExecutionTime)
 			maxExecutionTime = executionTime;

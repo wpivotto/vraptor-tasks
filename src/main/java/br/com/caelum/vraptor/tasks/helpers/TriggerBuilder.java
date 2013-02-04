@@ -44,12 +44,16 @@ public class TriggerBuilder {
 	
 	public static Trigger triggerFor(Class<?> controller, Method method) throws ParseException {
 		Trigger trigger = build(method.getAnnotation(Scheduled.class));
-		trigger.getJobDataMap().put("controller", controller.getName());
-		trigger.getJobDataMap().put("method", method.getName());
+		trigger.getJobDataMap().put("task-controller", controller.getName());
+		trigger.getJobDataMap().put("task-method", method.getName());
 		return trigger;
 	}
 	
-	public static String randomKey(){
+	public static Trigger cron(String expression) {
+		return newTrigger().withIdentity(randomKey()).withSchedule(cronSchedule(expression)).build();
+	}
+	
+	public static String randomKey() {
 		return UUID.randomUUID().toString();
 	}
 

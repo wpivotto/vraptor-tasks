@@ -31,7 +31,7 @@ public class DefaultJobFactory implements JobFactory {
 
 		JobDetail detail = bundle.getJobDetail();
 		JobProvider provider = providers.getProvider(detail.getJobClass());
-		Task task = factory.newTask(taskClass(detail));
+		Task task = factory.newTask(taskClass(detail), detail);
 		logger.debug("Using {} to provide {}", provider.getClass().getName(), task.getClass().getName());
 		return provider.newJob(task, task.getClass().getAnnotation(Scheduled.class));
 

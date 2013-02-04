@@ -1,19 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>br.com.prixma</groupId>
-  <artifactId>vraptor-tasks</artifactId>
-  <version>1.0.2</version>
-  <name>vraptor-tasks</name>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>br.com.prixma</groupId>
+	<artifactId>vraptor-tasks</artifactId>
+	<version>1.0.3</version>
+	<name>vraptor-tasks</name>
 
-  
-  <parent>
+
+	<parent>
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
 		<version>7</version>
-  </parent>
-  
-  
-  <developers>
+	</parent>
+
+
+	<developers>
 		<developer>
 			<id>wpivotto</id>
 			<name>William Pivotto</name>
@@ -26,12 +27,12 @@
 			<timezone>-3</timezone>
 		</developer>
 	</developers>
-	
-  <properties>
+
+	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-  	<build>
+	<build>
 		<plugins>
 
 			<!-- Additional Resources -->
@@ -65,36 +66,36 @@
 					<downloadJavadocs>true</downloadJavadocs>
 				</configuration>
 			</plugin>
-			
+
 			<!-- Create sources.jar -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 				<executions>
 					<execution>
-						  <id>attach-sources</id>
-						  <goals>
+						<id>attach-sources</id>
+						<goals>
 							<goal>jar</goal>
-						  </goals>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
-			
-	
+
+
 			<plugin>
-				  <groupId>org.apache.maven.plugins</groupId>
-				  <artifactId>maven-javadoc-plugin</artifactId>
-				  <executions>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
 					<execution>
-					  <id>attach-javadocs</id>
-					  <goals>
-						<goal>jar</goal>
-					  </goals>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
 					</execution>
-				  </executions>
+				</executions>
 			</plugin>
-			
-			<!--
+
+			<!--  
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
@@ -108,35 +109,46 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-maven-plugin</artifactId>
+				<version>1.7</version>
+			</plugin>
 			-->
-			
+
 		</plugins>
 	</build>
-	
-  <dependencies>
-		
-  	<dependency>
-  		<groupId>br.com.caelum</groupId>
-  		<artifactId>vraptor</artifactId>
-  		<version>3.4.0</version>
-  	</dependency>
-  	<dependency>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>br.com.caelum</groupId>
+			<artifactId>vraptor</artifactId>
+			<version>3.4.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.1</version>
 		</dependency>
-  	<dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.6.1</version>
 		</dependency>
-  	<dependency>
-  		<groupId>org.quartz-scheduler</groupId>
-  		<artifactId>quartz</artifactId>
-  		<version>2.1.1</version>
-  	</dependency>
-  	
-  	<!--  [hibernate] -->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+
+		<!-- [hibernate] -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate</artifactId>
@@ -167,8 +179,8 @@
 			<version>1.0.2.GA</version>
 			<type>pom</type>
 		</dependency>
-		<!--  [/hibernate] -->
-		
+		<!-- [/hibernate] -->
+
 		<!-- Provided dependencies -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -176,8 +188,8 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
-		
-		<!--  [Tests] -->
+
+		<!-- [Tests] -->
 		<dependency>
 			<groupId>org.jmock</groupId>
 			<artifactId>jmock</artifactId>
@@ -200,50 +212,50 @@
 			<version>1.8.5</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.5</version>
 			<scope>test</scope>
 		</dependency>
-	
-	
-	<!--  [/Tests] -->
-	
-  </dependencies>
-  
-  <licenses>
+
+
+		<!-- [/Tests] -->
+
+	</dependencies>
+
+	<licenses>
 		<license>
 			<distribution>repo</distribution>
 			<name>Apache License, Version 2.0</name>
 			<url>http://apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
-	
+
 	<repositories>
 		<repository>
-        <id>maven2-repository.dev.java.net</id>
-        <name>Java.net Repository for Maven</name>
-        <url>http://download.java.net/maven/2/
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Repository for Maven</name>
+			<url>http://download.java.net/maven/2/
         </url>
-        <layout>default</layout>
-        <snapshots>
-            <enabled>false</enabled>
-        </snapshots>
-        <releases>
-            <enabled>true</enabled>
-        </releases>
-    </repository>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
 	</repositories>
-	
-	
-	
+
+
+
 	<scm>
 		<url>http://github.com/wpivotto/vraptor-tasks</url>
 		<connection>scm:git:git://github.com/wpivotto/vraptor-tasks</connection>
 		<developerConnection>scm:git:git@github.com:wpivotto/vraptor-tasks.git</developerConnection>
 	</scm>
-	
-	
+
+
 </project>

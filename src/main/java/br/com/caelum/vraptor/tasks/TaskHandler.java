@@ -11,12 +11,11 @@ import java.util.Set;
 
 import org.quartz.Trigger;
 
-import br.com.caelum.vraptor.Get;
+import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.StereotypeHandler;
-import br.com.caelum.vraptor.resource.HttpMethod;
 import br.com.caelum.vraptor.tasks.helpers.TriggerBuilder;
 import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 import br.com.caelum.vraptor.tasks.scheduler.TaskScheduler;
@@ -43,8 +42,8 @@ public class TaskHandler implements StereotypeHandler {
 	}
 	
 	public void handle(Class<?> controller) {
-		for(Method method : controller.getMethods()){
-			if(isEligible(method)){
+		for(Method method : controller.getMethods()) {
+			if(isEligible(method)) {
 				try {
 					Trigger trigger = TriggerBuilder.triggerFor(controller, method);
 					String id = getId(controller, method);
@@ -66,31 +65,19 @@ public class TaskHandler implements StereotypeHandler {
 		}
 	}
 	
-	private boolean isEligible(Method m){
+	private boolean isEligible(Method m) {
 		return Modifier.isPublic(m.getModifiers()) &&
 			   !Modifier.isStatic(m.getModifiers()) &&
 			   m.isAnnotationPresent(Scheduled.class) && 
-			   acceptsHttpGet(m);
+			   m.isAnnotationPresent(Post.class);
 	}
 	
-	private boolean acceptsHttpGet(Method method) {
-		if (method.isAnnotationPresent(Get.class)) {
-			return true;
-		}
-		for (HttpMethod httpMethod : HttpMethod.values()) {
-			if (method.isAnnotationPresent(httpMethod.getAnnotation())) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private String getId(Class<? extends Task> task){
+	private String getId(Class<? extends Task> task) {
 		Scheduled params = task.getAnnotation(Scheduled.class);
 		return !params.id().isEmpty() ? params.id() : task.getSimpleName();
 	}
 	
-	private String getId(Class<?> controller, Method method){
+	private String getId(Class<?> controller, Method method) {
 		Scheduled params = method.getAnnotation(Scheduled.class);
 		if (!params.id().isEmpty()) 
 			return params.id();
@@ -98,15 +85,15 @@ public class TaskHandler implements StereotypeHandler {
 			return controller.getSimpleName() + "." + method.getName();
 	}
 	
-	public Set<Entry<String, Trigger>> requestScopedTasks(){
+	public Set<Entry<String, Trigger>> requestScopedTasks() {
 		return triggers.entrySet();
 	}
 	
-	public void markAsScheduled(){
+	public void markAsScheduled() {
 		triggers.clear();
 	}
 	
-	public boolean hasPendingTasksToSchedule(){
+	public boolean hasPendingTasksToSchedule() {
 		return !triggers.isEmpty();
 	}
 

@@ -38,7 +38,7 @@ public class QuartzScheduler implements TaskScheduler {
 	public void schedule(Class<? extends Task> task, Trigger trigger, String id) {
 
 		JobDetail detail = newJob(jobFor(task)).withIdentity(id).build();
-		
+
 		try {
 			if(!alreadyExists(id)) {
 				detail.getJobDataMap().put("task-class", task);
@@ -54,32 +54,46 @@ public class QuartzScheduler implements TaskScheduler {
 	}
 
 	private Class<? extends Job> jobFor(Class<? extends Task> task) {
-	
+
 		Scheduled options = task.getAnnotation(Scheduled.class);
-		
+
 		for(JobProvider provider : providers){
 			if(provider.canDecorate(task))
 				return provider.getJobWrapper(options);
 		}
-		
+
 		return new DefaultJobProvider().getJobWrapper(options);
-		
+
 	}
 
 	public void unschedule(String id) {
 		JobKey jobKey = new JobKey(id);
 		try {
-			if (quartz.checkExists(jobKey))
+			if (quartz.checkExists(jobKey)) {
 				quartz.deleteJob(jobKey);
+			}
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
+	public TaskScheduler include(String taskId, String param, Object value) {
+		try {
+			JobDetail detail = quartz.getJobDetail(new JobKey(taskId));
+			if (detail != null) {
+				detail.getJobDataMap().put(param, value);
+				quartz.addJob(detail, true);
+			}
+		} catch (SchedulerException e) {
+			log.warn("Unable to include parameter {}", param);
+		}
+		return this;
+	}
+
 	private boolean alreadyExists(String id) throws SchedulerException {
 		return quartz.checkExists(new JobKey(id));
 	}
-	
+
 	@PostConstruct
 	public void setup() {
 		System.setProperty("org.terracotta.quartz.skipUpdateCheck", "true");

@@ -25,46 +25,53 @@ Installation
 <dependency>
   	<groupId>br.com.prixma</groupId>
   	<artifactId>vraptor-tasks</artifactId>
-  	<version>1.0.2</version>
+  	<version>1.0.3</version>
 </dependency>
 ```
   
-Simple Task 
+Defining a Task
 --------   
 ```java
 @PrototypeScoped
 @Scheduled(fixedRate = 30000)
-public class ReportsDelivery implements Task {
+public class Spammer implements Task {
 
 	private Mailer mailer;
-	private ScheduledReports reports;
+	private MailingList list;
 		
-	ReportsDelivery(Mailer mailer, ScheduledReports reports){
+	//Automatically inject constructor arguments	
+	Spammer(Mailer mailer, MailingList list) {
 		this.mailer = mailer;
-		this.reports = reports;
+		this.list = list;
 	}
 	
 	public void execute() {
-		for(Email email : reports.toDeliver()){
-			mailer.send(email);
+		for(User user : list) {
+			mailer.send(new Spam(user));
 		}
 	}
 }
 ```
 
-Transactional Task (Hibernate)
+How to put a task in a database transaction block
 --------
+
+Solution: providing a one transaction per task invocation.
+Creates a session and begins a transaction on the beginning of the execution, and closes (and commits or rollbacks) them on the end of the execution.
+
+Hibernate example:
+
 ```java
 import br.com.caelum.vraptor.tasks.jobs.hibernate.TransactionalTask;
 	
 @PrototypeScoped
 @Scheduled(cron = "* * 0/12 * * ?")
-public class DatabaseDumper implements TransactionalTask {
+public class DatabasePurger implements TransactionalTask {
 
 	private Database database;
 
 	public void execute() {
-		database.backup();
+		database.purge();
 	}
 
 	public void setup(Session session, Validator validator) {
@@ -73,26 +80,47 @@ public class DatabaseDumper implements TransactionalTask {
 }
 ```
 
-Transactional Task (JPA)
---------
+JPA example:
+
 ```java
 import br.com.caelum.vraptor.tasks.jobs.jpa.TransactionalTask;
 	
 @PrototypeScoped
 @Scheduled(cron = "* * 0/12 * * ?")
-public class DatabaseDumper implements TransactionalTask {
-
-	private Database database;
-
-	public void execute() {
-		database.backup();
-	}
+public class DatabasePurger implements TransactionalTask {
 
 	public void setup(EntityManager manager, Validator validator) {
 		database = new Database(manager);
 	}
 }
 ```
+
+Passing Parameters
+--------
+	
+```java	
+public schedule(TaskScheduler scheduler) {
+	scheduler.schedule(LogCleaner.class, customTrigger(), "LogCleaner");
+	scheduler.include("LogCleaner", "path", "/usr/share/logs/").include("LogCleaner", "maxAge", 60 * 24 * 7);
+}
+
+@Component
+@Scheduled(fixedRate = 60000)
+public class LogCleaner implements Task {
+
+	@Param
+	private String path;
+	
+	@Param
+	private Integer maxAge = 60 * 24; //default value
+	
+	public void execute() {
+	}
+	
+}
+```
+
+
 
 Bean Validation (JSR303)	
 --------
@@ -131,7 +159,7 @@ public class CsvImporter implements TransactionalTask {
 ```java
 
 @Entity
-public class client {
+public class Client {
 	
 	@Id
 	@GeneratedValue
@@ -150,7 +178,6 @@ Manual Scheduling
 	
 ```java	
 @Component
-@ApplicationScoped
 public class CustomScheduler {
 
 	public CustomScheduler(TaskScheduler scheduler){
@@ -161,7 +188,7 @@ public class CustomScheduler {
 
 You can schedule a task dynamically with different triggers. For that you should schedule your task with a unique identifier.
 
-Identifying Tasks
+Identifiers
 --------
 
 The quartz scheduler requires that every task has a unique identifier. You can specify the identifier of the task as follows:
@@ -191,7 +218,13 @@ public class TaskController {
 	}
 
     @Scheduled(fixedRate = 1500)
-	public void execute() {
+	public void taskCode1() {
+		//put your task logic here
+		result.nothing();
+	}
+	
+	@Scheduled(fixedRate = 1500)
+	public void taskCode2(String param1, Integer param2) {
 		//put your task logic here
 		result.nothing();
 	}
