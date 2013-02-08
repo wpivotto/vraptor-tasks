@@ -234,8 +234,6 @@ public class TaskController {
 This works because this plugin finds the route to the method and schedule a task that dynamically invokes the associated URL.
 This type of task are scheduled **only when the server receives the first request**. Only in this way the plugin can assemble the full path to the method (retrieving the scheme, protocol, port ...). <br>
 
-*Obs: for security, all calls to this method from outside the server are blocked.*
-
 Stateful Tasks
 --------
 
