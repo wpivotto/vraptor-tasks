@@ -77,7 +77,7 @@ public class QuartzScheduler implements TaskScheduler {
 		}
 	}
 
-	public TaskScheduler include(String taskId, String param, Object value) {
+	public TaskScheduler include(String param, Object value, String taskId) {
 		try {
 			JobDetail detail = quartz.getJobDetail(new JobKey(taskId));
 			if (detail != null) {

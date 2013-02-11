@@ -95,7 +95,7 @@
 				</executions>
 			</plugin>
 
-			<!--  
+			   
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
@@ -115,7 +115,6 @@
 				<artifactId>nexus-maven-plugin</artifactId>
 				<version>1.7</version>
 			</plugin>
-			-->
 
 		</plugins>
 	</build>

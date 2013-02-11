@@ -7,7 +7,7 @@ import br.com.caelum.vraptor.tasks.Task;
 public interface TaskScheduler {
 
 	void schedule(Class<? extends Task> task, Trigger trigger, String taskId);
-	TaskScheduler include(String taskId, String param, Object value);
+	TaskScheduler include(String param, Object value, String taskId);
 	void unschedule(String taskId);
 
 }
