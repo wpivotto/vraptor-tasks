@@ -6,7 +6,7 @@ Plug-in library of Quartz job scheduling for vraptor
 Installation 
 --------
 
-1. 	In a Maven project's pom.xml file:
+*	In a Maven project's pom.xml file:
 
 ```xml 
  <repositories>
@@ -28,6 +28,8 @@ Installation
   	<version>1.0.3</version>
 </dependency>
 ```
+
+*	Or [download](https://oss.sonatype.org/content/groups/public/br/com/prixma/vraptor-tasks/ "Download Link") manually
   
 Defining a Task
 --------   
@@ -49,6 +51,10 @@ public class Spammer implements Task {
 		for(User user : list) {
 			mailer.send(new Spam(user));
 		}
+	}
+	
+	public void add(User user) {
+		list.add(user);
 	}
 }
 ```
@@ -207,26 +213,27 @@ Tasks should only be scheduled using `@ApplicationScoped` or `@PrototypeScoped` 
 If your task depends on `@RequestScoped` components, you can annotate a method of your controller that will be invoked automatically.
 
 ```java
+@RequestScoped
+public class Component {
+
+	public void action() {}
+	
+}
+
 @Resource
-public class TaskController {
+public class Controller {
 
-	private final Result result;
+	private final Component component;
 	
-	public TaskController(Result result) {
-		this.result = result;
+	public Controller(Component component) {
+		this.component = component;
 	}
 
-    @Scheduled(fixedRate = 1500)
-	public void taskCode1() {
-		//put your task logic here
-		result.nothing();
+    @Post @Scheduled(fixedRate = 5000)
+	public void execute() {
+		component.action();
 	}
 	
-	@Scheduled(fixedRate = 1500)
-	public void taskCode2(String param1, Integer param2) {
-		//put your task logic here
-		result.nothing();
-	}
 }
 ```
 
