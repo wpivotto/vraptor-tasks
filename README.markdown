@@ -99,9 +99,8 @@ Passing Parameters
 --------
 	
 ```java	
-public schedule(TaskScheduler scheduler) {
-	scheduler.schedule(LogCleaner.class, customTrigger(), "LogCleaner");
-	scheduler.include("LogCleaner", "path", "/usr/share/logs/").include("LogCleaner", "maxAge", 60 * 24 * 7);
+public includeParam(TaskScheduler scheduler) {
+	scheduler.include("path", "/usr/share/logs/", "LogCleaner").include("maxAge", 60 * 24 * 7, "LogCleaner");
 }
 
 @Component
