@@ -34,7 +34,7 @@ Installation
 Defining a Task
 --------   
 ```java
-@PrototypeScoped
+@ApplicationScoped
 @Scheduled(fixedRate = 30000)
 public class Spammer implements Task {
 
@@ -70,7 +70,7 @@ Hibernate example:
 ```java
 import br.com.caelum.vraptor.tasks.jobs.hibernate.TransactionalTask;
 	
-@PrototypeScoped
+@ApplicationScoped
 @Scheduled(cron = "* * 0/12 * * ?")
 public class DatabasePurger implements TransactionalTask {
 
@@ -91,7 +91,7 @@ JPA example:
 ```java
 import br.com.caelum.vraptor.tasks.jobs.jpa.TransactionalTask;
 	
-@PrototypeScoped
+@ApplicationScoped
 @Scheduled(cron = "* * 0/12 * * ?")
 public class DatabasePurger implements TransactionalTask {
 
@@ -109,7 +109,7 @@ public includeParam(TaskScheduler scheduler) {
 	scheduler.include("path", "/usr/share/logs/", "LogCleaner").include("maxAge", 60 * 24 * 7, "LogCleaner");
 }
 
-@Component
+@ApplicationScoped
 @Scheduled(fixedRate = 60000)
 public class LogCleaner implements Task {
 
@@ -137,7 +137,7 @@ If validation fails the transaction will not be effective.
 import br.com.caelum.vraptor.tasks.jobs.jpa.TransactionalTask;
 import br.com.caelum.vraptor.tasks.validator.Validator;
 	
-@PrototypeScoped
+@ApplicationScoped
 @Scheduled(fixedRate = 60000)
 public class CsvImporter implements TransactionalTask {
 
@@ -164,6 +164,7 @@ public class CsvImporter implements TransactionalTask {
 ```java
 
 @Entity
+@Component
 public class Client {
 	
 	@Id
