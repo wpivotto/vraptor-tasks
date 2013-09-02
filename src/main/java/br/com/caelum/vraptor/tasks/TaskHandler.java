@@ -5,9 +5,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.quartz.Trigger;
 
@@ -17,20 +14,22 @@ import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.StereotypeHandler;
 import br.com.caelum.vraptor.tasks.helpers.TriggerBuilder;
+import br.com.caelum.vraptor.tasks.jobs.request.DefaultRequestScopedTask;
 import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 import br.com.caelum.vraptor.tasks.scheduler.TaskScheduler;
-
-import com.google.common.collect.Maps;
 
 @Component
 @ApplicationScoped
 public class TaskHandler implements StereotypeHandler {
 
 	private final TaskScheduler scheduler;
-	private Map<String, Trigger> triggers = Maps.newHashMap();
+	private final TaskLinker linker;
+	private final TriggerBuilder builder;
 
-	public TaskHandler(TaskScheduler scheduler, List<Task> tasks) {
+	public TaskHandler(TaskScheduler scheduler, TaskLinker linker, TriggerBuilder builder, List<Task> tasks) {
 		this.scheduler = scheduler;
+		this.linker = linker;
+		this.builder = builder;
 		for (Task task : tasks) {
 			if(task.getClass().isAnnotationPresent(Scheduled.class))
 				scheduleTask(task.getClass());
@@ -45,20 +44,22 @@ public class TaskHandler implements StereotypeHandler {
 		for(Method method : controller.getMethods()) {
 			if(isEligible(method)) {
 				try {
-					Trigger trigger = TriggerBuilder.triggerFor(controller, method);
-					String id = getId(controller, method);
-					triggers.put(id, trigger);
+					Trigger trigger = builder.triggerFor(controller, method);
+					String uri = linker.linkTo(controller, method);
+					String id = getTaskId(controller, method);
+					trigger.getJobDataMap().put("task-uri", uri);
+					scheduler.schedule(DefaultRequestScopedTask.class, trigger, id);
 				} catch (ParseException e) {
 					throw new IllegalStateException(e);
 				}	
 			}
 		}
 	}
-
-	public void scheduleTask(Class<? extends Task> task) {
+	
+	private void scheduleTask(Class<? extends Task> task) {
 		try {
-			Trigger trigger = TriggerBuilder.triggerFor(task);
-			String id = getId(task);
+			Trigger trigger = builder.triggerFor(task);
+			String id = getTaskId(task);
 			scheduler.schedule(task, trigger, id);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
@@ -72,29 +73,17 @@ public class TaskHandler implements StereotypeHandler {
 			   m.isAnnotationPresent(Post.class);
 	}
 	
-	private String getId(Class<? extends Task> task) {
+	private String getTaskId(Class<? extends Task> task) {
 		Scheduled params = task.getAnnotation(Scheduled.class);
 		return !params.id().isEmpty() ? params.id() : task.getSimpleName();
 	}
 	
-	private String getId(Class<?> controller, Method method) {
+	private String getTaskId(Class<?> controller, Method method) {
 		Scheduled params = method.getAnnotation(Scheduled.class);
 		if (!params.id().isEmpty()) 
 			return params.id();
 		else
 			return controller.getSimpleName() + "." + method.getName();
-	}
-	
-	public Set<Entry<String, Trigger>> requestScopedTasks() {
-		return triggers.entrySet();
-	}
-	
-	public void markAsScheduled() {
-		triggers.clear();
-	}
-	
-	public boolean hasPendingTasksToSchedule() {
-		return !triggers.isEmpty();
 	}
 
 }

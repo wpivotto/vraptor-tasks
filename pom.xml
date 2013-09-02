@@ -141,6 +141,12 @@
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>br.com.caelum.vraptor</groupId>
+			<artifactId>vraptor-environment</artifactId>
+			<version>1.1.4</version>
+		</dependency>
 
 		<!-- test libs -->
 		<dependency>

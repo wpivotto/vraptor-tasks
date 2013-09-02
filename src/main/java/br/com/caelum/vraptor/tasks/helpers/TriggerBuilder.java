@@ -11,12 +11,16 @@ import java.util.UUID;
 
 import org.quartz.Trigger;
 
+import br.com.caelum.vraptor.ioc.ApplicationScoped;
+import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 
+@Component
+@ApplicationScoped
 public class TriggerBuilder {
 	
-	private static Trigger build(Scheduled params){
+	private Trigger build(Scheduled params) {
 		String expression = params.cron();
 		int delay = params.initialDelay();
 		Date startTime = new Date(System.currentTimeMillis() + delay);
@@ -38,22 +42,22 @@ public class TriggerBuilder {
 				.build();
 	}
 	
-	public static Trigger triggerFor(Class<? extends Task> task) throws ParseException {
+	public Trigger triggerFor(Class<? extends Task> task) throws ParseException {
 		return build(task.getAnnotation(Scheduled.class));
 	}
 	
-	public static Trigger triggerFor(Class<?> controller, Method method) throws ParseException {
+	public Trigger triggerFor(Class<?> controller, Method method) throws ParseException {
 		Trigger trigger = build(method.getAnnotation(Scheduled.class));
 		trigger.getJobDataMap().put("task-controller", controller.getName());
 		trigger.getJobDataMap().put("task-method", method.getName());
 		return trigger;
 	}
 	
-	public static Trigger cron(String expression) {
+	public Trigger cron(String expression) {
 		return newTrigger().withIdentity(randomKey()).withSchedule(cronSchedule(expression)).build();
 	}
 	
-	public static String randomKey() {
+	public String randomKey() {
 		return UUID.randomUUID().toString();
 	}
 
