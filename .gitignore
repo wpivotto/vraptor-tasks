@@ -6,3 +6,4 @@
 .tomcatplugin
 .project
 target
+/bin

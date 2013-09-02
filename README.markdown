@@ -59,48 +59,6 @@ public class Spammer implements Task {
 }
 ```
 
-How to put a task in a database transaction block
---------
-
-Solution: providing a one transaction per task invocation.
-Creates a session and begins a transaction on the beginning of the execution, and closes (and commits or rollbacks) them on the end of the execution.
-
-Hibernate example:
-
-```java
-import br.com.caelum.vraptor.tasks.jobs.hibernate.TransactionalTask;
-	
-@ApplicationScoped
-@Scheduled(cron = "* * 0/12 * * ?")
-public class DatabasePurger implements TransactionalTask {
-
-	private Database database;
-
-	public void execute() {
-		database.purge();
-	}
-
-	public void setup(Session session, Validator validator) {
-		database = new Database(session);
-	}
-}
-```
-
-JPA example:
-
-```java
-import br.com.caelum.vraptor.tasks.jobs.jpa.TransactionalTask;
-	
-@ApplicationScoped
-@Scheduled(cron = "* * 0/12 * * ?")
-public class DatabasePurger implements TransactionalTask {
-
-	public void setup(EntityManager manager, Validator validator) {
-		database = new Database(manager);
-	}
-}
-```
-
 Passing Parameters
 --------
 	
@@ -124,8 +82,6 @@ public class LogCleaner implements Task {
 	
 }
 ```
-
-
 
 Bean Validation (JSR303)	
 --------
