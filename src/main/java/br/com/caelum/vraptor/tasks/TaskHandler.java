@@ -41,7 +41,7 @@ public class TaskHandler implements StereotypeHandler {
 	}
 	
 	public void handle(Class<?> controller) {
-		for(Method method : controller.getMethods()) {
+		for(Method method : controller.getDeclaredMethods()) {
 			if(isEligible(method)) {
 				try {
 					Trigger trigger = builder.triggerFor(controller, method);

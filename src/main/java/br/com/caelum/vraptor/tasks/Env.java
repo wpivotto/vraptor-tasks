@@ -1,5 +1,7 @@
 package br.com.caelum.vraptor.tasks;
 
+import java.util.NoSuchElementException;
+
 import javax.servlet.ServletContext;
 
 import br.com.caelum.vraptor.environment.Environment;
@@ -19,11 +21,15 @@ public class Env {
 	}
 
 	public String getHost() {
-		return env.get("host", "http://localhost");
+		try {
+			return env.get("host");
+		} catch (NoSuchElementException e) {
+			return "http://localhost";
+		}
 	}
 
 	public String getApplicationPath() {
 		return getHost() + context.getContextPath();
 	}
-
+	
 }
