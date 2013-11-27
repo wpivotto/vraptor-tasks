@@ -97,7 +97,7 @@
 				</executions>
 			</plugin>
 
-			   
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
@@ -129,24 +129,17 @@
 			<artifactId>vraptor</artifactId>
 			<version>3.5.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
 			<version>2.1.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>br.com.caelum.vraptor</groupId>
-			<artifactId>vraptor-environment</artifactId>
-			<version>1.1.2</version>
-			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -155,7 +148,6 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
-
 
 	</dependencies>
 
@@ -183,13 +175,10 @@
 		</repository>
 	</repositories>
 
-
-
 	<scm>
 		<url>http://github.com/wpivotto/vraptor-tasks</url>
 		<connection>scm:git:git://github.com/wpivotto/vraptor-tasks</connection>
 		<developerConnection>scm:git:git@github.com:wpivotto/vraptor-tasks.git</developerConnection>
 	</scm>
-
 
 </project>
