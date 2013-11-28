@@ -45,6 +45,7 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 	}
 
 	public void jobToBeExecuted(JobExecutionContext context) {
+		findStats(context);
 		notifier.notifyBeforeExecuteEvent(getId(context));
 	}
 

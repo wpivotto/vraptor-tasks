@@ -104,10 +104,6 @@ public class TaskStatistics {
 			return Throwables.getRootCause(lastException);
 		return null;
 	}
-	
-	public List<Date> getNextEvents() {
-		return getNextFireTimes(10);
-	}
 
 	public List<Date> getNextFireTimes(int maxCount) {
 		List<Date> result = Lists.newArrayList();
@@ -142,7 +138,7 @@ public class TaskStatistics {
 		if(SimpleTrigger.class.isAssignableFrom(trigger.getClass()))
 			return "Fixed Rate: " + ((SimpleTrigger) trigger).getRepeatInterval();
 		else
-			return ((CronTrigger) trigger).getExpressionSummary().replaceAll(System.getProperty("line.separator"), "<br />");
+			return ((CronTrigger) trigger).getExpressionSummary().replaceAll(System.getProperty("line.separator"), "\n");
 	}
 	
 	public Trigger getTrigger() {
@@ -153,8 +149,12 @@ public class TaskStatistics {
 		return triggerState;
 	}
 	
-	public String getParametersAsString() {
-		return Joiner.on(", <br />").withKeyValueSeparator(" => ").join(parameters);
+	public String printParameters() {
+		return Joiner.on(", ").withKeyValueSeparator(" => ").join(parameters);
+	}
+	
+	public String printNextEvents() {
+		return Joiner.on(", ").join(getNextFireTimes(10));
 	}
 	
 	public Map<String, Object> getParameters() {
@@ -191,7 +191,19 @@ public class TaskStatistics {
 			new RuntimeException("Error retrieving trigger state");
 		}
 	}
-	
 
+	@Override
+	public String toString() {
+		return "[Task: " + getTask() + ",\n Trigger: " + getTriggerExpression()
+				+ ",\n Trigger State: " + getTriggerState() + ",\n Fire Time: " + getFireTime()
+				+ ",\n Scheduled Fire Time: " + getScheduledFireTime()
+				+ ",\n Next Fire Times: " + printNextEvents() + ",\n Previous Fire Time: "
+				+ getPreviousFireTime() + ",\n Execution Time: " + getExecutionTime()
+				+ ",\n Max Execution Time: " + getMaxExecutionTime()
+				+ ",\n Min Execution Time: " + getMinExecutionTime()
+				+ ",\n Execution Count: " + getExecutionCount() + ",\n Refire Count: "
+				+ getRefireCount() + ",\n Fail Count: " + getFailCount() + ",\n Last Exception: "
+				+ getLastException() + ",\n Parameters: " + printParameters() + "]";
+	}
 
 }
