@@ -25,7 +25,7 @@ Installation
 <dependency>
   	<groupId>br.com.prixma</groupId>
   	<artifactId>vraptor-tasks</artifactId>
-  	<version>1.0.3</version>
+  	<version>1.1.0</version>
 </dependency>
 ```
 
@@ -68,7 +68,7 @@ public includeParam(TaskScheduler scheduler) {
 }
 
 @ApplicationScoped
-@Scheduled(fixedRate = 60000)
+@Scheduled(cron = "0 0 12 * * ?")
 public class LogCleaner implements Task {
 
 	@Param
@@ -81,56 +81,6 @@ public class LogCleaner implements Task {
 	}
 	
 }
-```
-
-Bean Validation (JSR303)	
---------
-
-To use these features you only need to put any implementation of Bean Validation jars in your classpath.
-If validation fails the transaction will not be effective. 
-
-```java
-import br.com.caelum.vraptor.tasks.jobs.jpa.TransactionalTask;
-import br.com.caelum.vraptor.tasks.validator.Validator;
-	
-@ApplicationScoped
-@Scheduled(fixedRate = 60000)
-public class CsvImporter implements TransactionalTask {
-
-	private ClientRepository repository;
-	private Validator validator;
-	private CsvFile file = ...
-
-	public void execute() {
-		if(file.exists()){
-			while(file.hasNext()){
-				Client client = (Client) file.next();
-				validator.validate(client);
-				repository.add(client);
-			}
-		}
-	}
-
-	public void setup(EntityManager manager, Validator validator) {
-		this.repository = new ClientRepository(manager);
-		this.validator = validator;
-	}
-}
-```
-```java
-
-@Entity
-@Component
-public class Client {
-	
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	@CreditCardNumber
-	private String creditCard;
-	...
-
 ```
 
 Manual Scheduling
