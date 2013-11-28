@@ -5,10 +5,10 @@ import java.lang.reflect.Method;
 import br.com.caelum.vraptor.config.Configuration;
 import br.com.caelum.vraptor.http.route.Router;
 import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.RequestScoped;
+import br.com.caelum.vraptor.ioc.PrototypeScoped;
 
 @Component
-@RequestScoped
+@PrototypeScoped
 public class TaskLinker {
 
 	private final Router router;
