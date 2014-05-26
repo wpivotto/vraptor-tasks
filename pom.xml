@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.com.prixma</groupId>
 	<artifactId>vraptor-tasks</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<name>vraptor-tasks</name>
 
 
@@ -127,8 +127,14 @@
 		<dependency>
 			<groupId>br.com.caelum</groupId>
 			<artifactId>vraptor</artifactId>
-			<version>3.5.1</version>
+			<version>4.0.0.Final</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>javax.enterprise</groupId>
+			<artifactId>cdi-api</artifactId>
+			<version>1.1</version>
+		</dependency>	
 
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
