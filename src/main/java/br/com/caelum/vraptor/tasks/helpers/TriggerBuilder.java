@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 
 import br.com.caelum.vraptor.tasks.Task;
@@ -43,6 +44,13 @@ public class TriggerBuilder {
 	
 	public Trigger triggerFor(Class<? extends Task> task) throws ParseException {
 		return build(task.getAnnotation(Scheduled.class));
+	}
+	
+	public SimpleTrigger runOnce(Class<? extends Task> task) {
+		return (SimpleTrigger) newTrigger() 
+	            .withIdentity(randomKey())
+	            .startAt(new Date())
+	            .build();
 	}
 	
 	public Trigger triggerFor(Class<?> controller, Method method) throws ParseException {
