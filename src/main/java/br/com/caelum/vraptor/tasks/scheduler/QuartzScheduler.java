@@ -77,19 +77,6 @@ public class QuartzScheduler implements TaskScheduler {
 		}
 	}
 
-	public TaskScheduler include(String param, Object value, String taskId) {
-		try {
-			JobDetail detail = quartz.getJobDetail(new JobKey(taskId));
-			if (detail != null) {
-				detail.getJobDataMap().put(param, value);
-				quartz.addJob(detail, true);
-			}
-		} catch (SchedulerException e) {
-			log.warn("Unable to include parameter {}", param);
-		}
-		return this;
-	}
-
 	private boolean alreadyExists(String id) throws SchedulerException {
 		return quartz.checkExists(new JobKey(id));
 	}
