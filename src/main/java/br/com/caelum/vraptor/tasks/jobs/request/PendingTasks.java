@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 
 import br.com.caelum.vraptor.Controller;
@@ -16,7 +17,7 @@ import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 import com.google.common.collect.Maps;
 
 @ApplicationScoped
-public class PendingTasks {
+public class PendingTasks implements Extension {
 
 	private Map<String, Method> entries = Maps.newHashMap();
 	
