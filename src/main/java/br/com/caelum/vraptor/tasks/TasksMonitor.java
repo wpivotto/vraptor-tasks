@@ -24,10 +24,13 @@ import com.google.common.collect.Maps;
 @ApplicationScoped
 public class TasksMonitor implements JobListener, SchedulerListener {
 	
-	private final TaskEventNotifier notifier;
+	private TaskEventNotifier notifier;
 	private Scheduler scheduler;
 	private Map<String, TaskStatistics> statistics = Maps.newHashMap();
 
+	@Deprecated // CDI eyes only
+	public TasksMonitor() {}
+	
 	@Inject
 	public TasksMonitor(TaskEventNotifier notifier) {
 		this.notifier = notifier;

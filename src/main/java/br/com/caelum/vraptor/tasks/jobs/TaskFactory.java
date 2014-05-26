@@ -11,7 +11,10 @@ import br.com.caelum.vraptor.tasks.Task;
 @ApplicationScoped
 public class TaskFactory {
 	
-	private final Container container;
+	private Container container;
+	
+	@Deprecated // CDI eyes only
+	public TaskFactory() {}
 	
 	@Inject
 	public TaskFactory(Container container) {

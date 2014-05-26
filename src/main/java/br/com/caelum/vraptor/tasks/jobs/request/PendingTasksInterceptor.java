@@ -24,11 +24,14 @@ import br.com.caelum.vraptor.tasks.scheduler.TaskScheduler;
 @RequestScoped
 public class PendingTasksInterceptor {
 	
-	private final PendingTasks pendingTasks;
-	private final TaskLinker linker;
-	private final TriggerBuilder builder;
-	private final TaskScheduler scheduler;
+	private PendingTasks pendingTasks;
+	private TaskLinker linker;
+	private TriggerBuilder builder;
+	private TaskScheduler scheduler;
 	private final Logger log = LoggerFactory.getLogger(getClass());
+	
+	@Deprecated // CDI eyes only
+	public PendingTasksInterceptor() {}
 	
 	@Inject
 	public PendingTasksInterceptor(PendingTasks tasks, TaskLinker linker, TriggerBuilder builder, TaskScheduler scheduler) {

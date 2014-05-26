@@ -19,8 +19,11 @@ import br.com.caelum.vraptor.tasks.TasksMonitor;
 public class SchedulerCreator {
 
 	private static Logger logger = LoggerFactory.getLogger(SchedulerCreator.class);
-	private final Scheduler scheduler;
+	private Scheduler scheduler;
 
+	@Deprecated // CDI eyes only
+	public SchedulerCreator() {}
+	
 	@Inject
 	public SchedulerCreator(JobFactory factory, TasksMonitor monitor) {
 

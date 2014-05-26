@@ -3,20 +3,27 @@ package br.com.caelum.vraptor.tasks.callback;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.quartz.Trigger;
 
 import br.com.caelum.vraptor.tasks.TaskStatistics;
 
+import com.google.common.collect.Lists;
+
 @ApplicationScoped
 public class TaskEventNotifier {
 	
-	private final List<TaskCallback> listeners;
+	private List<TaskCallback> listeners;
 
+	@Deprecated // CDI eyes only
+	public TaskEventNotifier() {}
+	
 	@Inject
-	public TaskEventNotifier(List<TaskCallback> listeners) {
-		this.listeners = listeners;
+	public TaskEventNotifier(@Any Instance<TaskCallback> listeners) {
+		this.listeners = Lists.newArrayList(listeners);
 	}
 	
 	public void notifyScheduledEvent(String taskId, Trigger trigger){

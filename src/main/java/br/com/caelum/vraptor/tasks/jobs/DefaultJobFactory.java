@@ -18,10 +18,13 @@ import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 @ApplicationScoped
 public class DefaultJobFactory implements JobFactory {
 
-	private final JobProviders providers;
-	private final TaskFactory factory;
+	private JobProviders providers;
+	private TaskFactory factory;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	@Deprecated // CDI eyes only
+	public DefaultJobFactory() {}
+	
 	@Inject
 	public DefaultJobFactory(JobProviders providers, TaskFactory factory) {
 		this.providers = providers;

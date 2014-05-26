@@ -1,8 +1,8 @@
 package br.com.caelum.vraptor.tasks.callback;
 
-import java.util.List;
-
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.quartz.JobListener;
@@ -18,8 +18,11 @@ public class QuartzListeners {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
+	@Deprecated // CDI eyes only
+	public QuartzListeners() {}
+	
 	@Inject
-	public QuartzListeners(Scheduler quartz, List<JobListener> jobListeners, List<SchedulerListener> schedListeners) {
+	public QuartzListeners(Scheduler quartz, @Any Instance<JobListener> jobListeners, @Any Instance<SchedulerListener> schedListeners) {
 		try {
 			for(JobListener listener : jobListeners) {
 				quartz.getListenerManager().addJobListener(listener);

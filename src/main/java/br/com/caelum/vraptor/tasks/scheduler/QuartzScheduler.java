@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.quartz.Job;
@@ -21,18 +23,23 @@ import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.jobs.JobProvider;
 import br.com.caelum.vraptor.tasks.jobs.simple.DefaultJobProvider;
 
+import com.google.common.collect.Lists;
+
 
 @ApplicationScoped
 public class QuartzScheduler implements TaskScheduler {
 
-	protected final Scheduler quartz;
-	private final List<JobProvider> providers;
-	private final Logger log = LoggerFactory.getLogger(getClass());
+	protected Scheduler quartz;
+	private List<JobProvider> providers;
+	private Logger log = LoggerFactory.getLogger(getClass());
 
+	@Deprecated // CDI eyes only
+	public QuartzScheduler() {}
+	
 	@Inject
-	public QuartzScheduler(Scheduler quartz, List<JobProvider> providers) {
+	public QuartzScheduler(Scheduler quartz, @Any Instance<JobProvider> providers) {
 		this.quartz = quartz;
-		this.providers = providers;
+		this.providers = Lists.newArrayList(providers);
 	}
 
 	public void schedule(Class<? extends Task> task, Trigger trigger, String id) {
