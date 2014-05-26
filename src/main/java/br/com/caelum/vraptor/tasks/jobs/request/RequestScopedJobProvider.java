@@ -1,14 +1,13 @@
 package br.com.caelum.vraptor.tasks.jobs.request;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.quartz.Job;
 
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.jobs.JobProvider;
 import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 
-@Component
 @ApplicationScoped
 public class RequestScopedJobProvider implements JobProvider {
 

@@ -3,21 +3,22 @@ package br.com.caelum.vraptor.tasks;
 import java.text.ParseException;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.quartz.Trigger;
 
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.helpers.TriggerBuilder;
 import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 import br.com.caelum.vraptor.tasks.scheduler.TaskScheduler;
 
-@Component
 @ApplicationScoped
 public class TaskHandler {
 
 	private final TaskScheduler scheduler;
 	private final TriggerBuilder builder;
 
+	@Inject
 	public TaskHandler(TaskScheduler scheduler, TriggerBuilder builder, List<Task> tasks) {
 		this.scheduler = scheduler;
 		this.builder = builder;

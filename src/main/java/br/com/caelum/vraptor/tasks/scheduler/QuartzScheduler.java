@@ -5,6 +5,8 @@ import static org.quartz.JobBuilder.newJob;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.quartz.Job;
 import org.quartz.JobDetail;
@@ -15,14 +17,11 @@ import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.jobs.JobProvider;
 import br.com.caelum.vraptor.tasks.jobs.simple.DefaultJobProvider;
 
 
-@Component
 @ApplicationScoped
 public class QuartzScheduler implements TaskScheduler {
 
@@ -30,6 +29,7 @@ public class QuartzScheduler implements TaskScheduler {
 	private final List<JobProvider> providers;
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
+	@Inject
 	public QuartzScheduler(Scheduler quartz, List<JobProvider> providers) {
 		this.quartz = quartz;
 		this.providers = providers;

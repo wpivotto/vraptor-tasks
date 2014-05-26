@@ -3,18 +3,19 @@ package br.com.caelum.vraptor.tasks.jobs;
 
 import java.util.List;
 
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 import org.quartz.Job;
 
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.PrototypeScoped;
 import br.com.caelum.vraptor.tasks.jobs.simple.DefaultJobProvider;
 
-@Component
-@PrototypeScoped
+@Dependent
 public class JobProviders {
 	
 	private final List<JobProvider> providers;
 	
+	@Inject
 	public JobProviders(List<JobProvider> providers) {
 		this.providers = providers;
 	}

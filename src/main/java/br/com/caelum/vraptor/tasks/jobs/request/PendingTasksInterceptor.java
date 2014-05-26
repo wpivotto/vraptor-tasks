@@ -4,23 +4,25 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.Map;
 
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+
 import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.caelum.vraptor.InterceptionException;
+import br.com.caelum.vraptor.Accepts;
+import br.com.caelum.vraptor.AroundCall;
 import br.com.caelum.vraptor.Intercepts;
-import br.com.caelum.vraptor.core.InterceptorStack;
-import br.com.caelum.vraptor.interceptor.Interceptor;
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.resource.ResourceMethod;
+import br.com.caelum.vraptor.controller.ControllerMethod;
+import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
 import br.com.caelum.vraptor.tasks.TaskLinker;
 import br.com.caelum.vraptor.tasks.helpers.TriggerBuilder;
 import br.com.caelum.vraptor.tasks.scheduler.TaskScheduler;
 
-@Component
 @Intercepts
-public class PendingTasksInterceptor implements Interceptor {
+@RequestScoped
+public class PendingTasksInterceptor {
 	
 	private final PendingTasks pendingTasks;
 	private final TaskLinker linker;
@@ -28,6 +30,7 @@ public class PendingTasksInterceptor implements Interceptor {
 	private final TaskScheduler scheduler;
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
+	@Inject
 	public PendingTasksInterceptor(PendingTasks tasks, TaskLinker linker, TriggerBuilder builder, TaskScheduler scheduler) {
 		this.pendingTasks = tasks;
 		this.linker = linker;
@@ -35,16 +38,16 @@ public class PendingTasksInterceptor implements Interceptor {
 		this.scheduler = scheduler;
 	}
 
-	@Override
-	public void intercept(InterceptorStack stack, ResourceMethod method, Object resourceInstance) throws InterceptionException {
+	@AroundCall
+	public void intercept(SimpleInterceptorStack stack) {
 		schedulePendingTasks();
-		stack.next(method, resourceInstance);
+		stack.next();
 	}
 
-	@Override
-	public boolean accepts(ResourceMethod method) {
+	@Accepts
+    public boolean accepts(ControllerMethod method) {
 		return !pendingTasks.isEmpty();
-	}
+    }
 	
 	private void schedulePendingTasks() {
 		Map<String, Method> tasks = pendingTasks.all();

@@ -3,6 +3,9 @@ package br.com.caelum.vraptor.tasks;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -14,13 +17,10 @@ import org.quartz.SchedulerListener;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.callback.TaskEventNotifier;
 
 import com.google.common.collect.Maps;
 
-@Component
 @ApplicationScoped
 public class TasksMonitor implements JobListener, SchedulerListener {
 	
@@ -28,6 +28,7 @@ public class TasksMonitor implements JobListener, SchedulerListener {
 	private Scheduler scheduler;
 	private Map<String, TaskStatistics> statistics = Maps.newHashMap();
 
+	@Inject
 	public TasksMonitor(TaskEventNotifier notifier) {
 		this.notifier = notifier;
 	}

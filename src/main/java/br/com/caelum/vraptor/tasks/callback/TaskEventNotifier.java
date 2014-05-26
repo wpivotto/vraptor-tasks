@@ -2,18 +2,19 @@ package br.com.caelum.vraptor.tasks.callback;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.quartz.Trigger;
 
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.TaskStatistics;
 
-@Component
 @ApplicationScoped
 public class TaskEventNotifier {
 	
 	private final List<TaskCallback> listeners;
 
+	@Inject
 	public TaskEventNotifier(List<TaskCallback> listeners) {
 		this.listeners = listeners;
 	}

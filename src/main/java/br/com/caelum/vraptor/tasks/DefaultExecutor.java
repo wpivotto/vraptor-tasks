@@ -1,18 +1,18 @@
 package br.com.caelum.vraptor.tasks;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
-
-@Component
 @ApplicationScoped
 public class DefaultExecutor implements TaskExecutor {
 
 	private final Scheduler quartz;
 	
+	@Inject
 	public DefaultExecutor(Scheduler quartz) {
 		this.quartz = quartz;
 	}

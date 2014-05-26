@@ -1,27 +1,30 @@
 package br.com.caelum.vraptor.tasks.jobs.request;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
+
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Post;
-import br.com.caelum.vraptor.Resource;
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.StereotypeHandler;
 import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 
 import com.google.common.collect.Maps;
 
-@Component
 @ApplicationScoped
-public class PendingTasks implements StereotypeHandler {
+public class PendingTasks {
 
 	private Map<String, Method> entries = Maps.newHashMap();
-
-	public Class<? extends Annotation> stereotype() {
-		return Resource.class;
+	
+	public void scheduleJob(@Observes ProcessAnnotatedType<?> pat) {
+		AnnotatedType<?> t = pat.getAnnotatedType();
+		if (t.isAnnotationPresent(Controller.class)) {
+			handle(t.getJavaClass());
+		}
 	}
 	
 	public void handle(Class<?> controller) {

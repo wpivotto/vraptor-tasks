@@ -9,14 +9,13 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.quartz.Trigger;
 
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 
-@Component
 @ApplicationScoped
 public class TriggerBuilder {
 	

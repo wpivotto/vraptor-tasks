@@ -1,5 +1,8 @@
 package br.com.caelum.vraptor.tasks.jobs;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -9,12 +12,9 @@ import org.quartz.spi.TriggerFiredBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 
-@Component
 @ApplicationScoped
 public class DefaultJobFactory implements JobFactory {
 
@@ -22,6 +22,7 @@ public class DefaultJobFactory implements JobFactory {
 	private final TaskFactory factory;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	@Inject
 	public DefaultJobFactory(JobProviders providers, TaskFactory factory) {
 		this.providers = providers;
 		this.factory = factory;

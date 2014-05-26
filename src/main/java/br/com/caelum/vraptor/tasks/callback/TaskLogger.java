@@ -1,16 +1,15 @@
 package br.com.caelum.vraptor.tasks.callback;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.quartz.CronTrigger;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.tasks.TaskStatistics;
 
-@Component
 @ApplicationScoped
 public class TaskLogger implements TaskCallback {
 

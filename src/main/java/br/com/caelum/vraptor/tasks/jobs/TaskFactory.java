@@ -3,6 +3,9 @@ package br.com.caelum.vraptor.tasks.jobs;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import net.vidageek.mirror.dsl.Matcher;
 import net.vidageek.mirror.dsl.Mirror;
 
@@ -10,19 +13,17 @@ import org.quartz.JobDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.Container;
 import br.com.caelum.vraptor.tasks.Param;
 import br.com.caelum.vraptor.tasks.Task;
 
-@Component
 @ApplicationScoped
 public class TaskFactory {
 	
 	private final Container container;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
+	@Inject
 	public TaskFactory(Container container) {
 		this.container = container;
 	}
