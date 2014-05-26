@@ -1,4 +1,4 @@
-package br.com.caelum.vraptor.tasks.callback;
+package br.com.caelum.vraptor.tasks.events;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Any;

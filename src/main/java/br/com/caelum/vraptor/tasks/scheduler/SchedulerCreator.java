@@ -11,7 +11,7 @@ import org.quartz.spi.JobFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.caelum.vraptor.tasks.TasksMonitor;
+import br.com.caelum.vraptor.tasks.events.TasksMonitor;
 
 public class SchedulerCreator {
 
@@ -25,7 +25,6 @@ public class SchedulerCreator {
 				scheduler = new StdSchedulerFactory().getScheduler();
 				scheduler.setJobFactory(factory);
 				scheduler.getListenerManager().addJobListener(monitor);
-				scheduler.getListenerManager().addSchedulerListener(monitor);
 				monitor.setScheduler(scheduler);
 				this.scheduler.startDelayed(5);
 			} catch (SchedulerException e) {

@@ -42,7 +42,7 @@ public class TaskStatistics {
 		this.task = task;
 		this.trigger = context.getTrigger();
 		this.scheduledFireTime = trigger.getStartTime();
-		update(context, null);
+		update(context, null, null);
 	}
 	
 	public String getTask() {
@@ -161,7 +161,7 @@ public class TaskStatistics {
 		return parameters;
 	}
 	
-	public void update(JobExecutionContext context, Throwable exception) {
+	public void update(JobExecutionContext context, Throwable exception, Scheduler scheduler) {
 		
 		this.fireTime = context.getFireTime();
 		this.executionTime = context.getJobRunTime();
@@ -182,14 +182,13 @@ public class TaskStatistics {
 			lastException = exception;
 		}
 		
-	}
-
-	public void updateTriggerState(Scheduler scheduler) {
 		try {
-			this.triggerState = scheduler.getTriggerState(trigger.getKey());
+			if (scheduler != null) 
+				this.triggerState = scheduler.getTriggerState(trigger.getKey());
 		} catch (SchedulerException e) {
 			new RuntimeException("Error retrieving trigger state");
 		}
+		
 	}
 
 	@Override
