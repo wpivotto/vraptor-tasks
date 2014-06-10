@@ -204,7 +204,7 @@ Creating Custom Tasks
 
 To create custom tasks: 
 
-1.	Create an interface that extends `br.com.caelum.vraptor.tasks.Task`
+1) Create an interface that extends `br.com.caelum.vraptor.tasks.Task`
 
 ```java
 public interface InterruptableTask extends Task {
@@ -212,7 +212,7 @@ public interface InterruptableTask extends Task {
 }
 ```	
 
-2.	Create a class that decorate the execution of its task (must implement `org.quartz.Job`)
+2) Create a class that decorate the execution of its task (must implement `org.quartz.Job`)
 
 ```java
 public class InterruptableJobWrapper implements InterruptableJob {
@@ -233,10 +233,9 @@ public class InterruptableJobWrapper implements InterruptableJob {
 }
 ```
 
-3.	Create a class that provides its task (must implement `br.com.caelum.vraptor.tasks.jobs.JobProvider`)
+3) Create a class that provides its task (must implement `br.com.caelum.vraptor.tasks.jobs.JobProvider`)
 
 ```java
-@Component
 @ApplicationScoped
 public class InterruptableTaskProvider implements JobProvider {
 
@@ -263,7 +262,7 @@ public class InterruptableTaskProvider implements JobProvider {
 }
 ```
 
-4.	Now we are ready to do some cool task
+4) Now we are ready to do some cool task
 
 ```java
 @ApplicationScoped
