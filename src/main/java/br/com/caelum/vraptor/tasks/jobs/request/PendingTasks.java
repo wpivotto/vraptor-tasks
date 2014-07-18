@@ -2,7 +2,9 @@ package br.com.caelum.vraptor.tasks.jobs.request;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -52,16 +54,12 @@ public class PendingTasks implements Extension {
 			return controller.getSimpleName() + "." + method.getName();
 	}
 
-	public Map<String, Method> all() {
-		return entries;
+	public Iterator<Entry<String, Method>> iterator() {
+		return entries.entrySet().iterator();
 	}
 
 	public boolean isEmpty() {
 		return entries.isEmpty();
-	}
-
-	public void remove(String key) {
-		entries.remove(key);
 	}
 
 }

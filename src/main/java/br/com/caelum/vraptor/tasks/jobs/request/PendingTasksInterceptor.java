@@ -2,7 +2,8 @@ package br.com.caelum.vraptor.tasks.jobs.request;
 
 import java.lang.reflect.Method;
 import java.text.ParseException;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -53,8 +54,9 @@ public class PendingTasksInterceptor {
     }
 	
 	private void schedulePendingTasks() {
-		Map<String, Method> tasks = pendingTasks.all();
-		for (Map.Entry<String, Method> task : tasks.entrySet()) {
+		Iterator<Entry<String, Method>> tasks = pendingTasks.iterator();
+		while(tasks.hasNext()) {
+			Entry<String, Method> task = tasks.next();
 			Method method = task.getValue();
 			Class<?> controller = method.getDeclaringClass();
 			String URI = linker.linkTo(controller, method);
@@ -62,7 +64,7 @@ public class PendingTasksInterceptor {
 				Trigger trigger = builder.triggerFor(controller, method);
 				trigger.getJobDataMap().put("task-uri", URI);
 				scheduler.schedule(DefaultRequestScopedTask.class, trigger, task.getKey());
-				pendingTasks.remove(task.getKey());
+				tasks.remove();
 			} catch (ParseException e) {
 				log.error("Can't schedule task", e);
 			}
