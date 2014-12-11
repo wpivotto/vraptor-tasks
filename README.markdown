@@ -25,7 +25,7 @@ Installation
 <dependency>
   	<groupId>br.com.prixma</groupId>
   	<artifactId>vraptor-tasks</artifactId>
-  	<version>1.1.0</version>
+  	<version>1.2.0</version>
 </dependency>
 ```
 
@@ -34,15 +34,13 @@ Installation
 Defining a Task
 --------   
 ```java
-@ApplicationScoped
 @Scheduled(fixedRate = 30000)
 public class Spammer implements Task {
 
-	private Mailer mailer;
-	private MailingList list;
-		
-	//Automatically inject constructor arguments	
-	Spammer(Mailer mailer, MailingList list) {
+	private final Mailer mailer;
+	private final MailingList list;
+	
+	public (Mailer mailer, MailingList list) {
 		this.mailer = mailer;
 		this.list = list;
 	}
@@ -59,40 +57,16 @@ public class Spammer implements Task {
 }
 ```
 
-Passing Parameters
---------
-	
-```java	
-public includeParam(TaskScheduler scheduler) {
-	scheduler.include("path", "/usr/share/logs/", "LogCleaner").include("maxAge", 60 * 24 * 7, "LogCleaner");
-}
-
-@ApplicationScoped
-@Scheduled(cron = "0 0 12 * * ?")
-public class LogCleaner implements Task {
-
-	@Param
-	private String path;
-	
-	@Param
-	private Integer maxAge = 60 * 24; //default value
-	
-	public void execute() {
-	}
-	
-}
-```
-
 Manual Scheduling
 --------
 1. 	Remove @Scheduled annotation
 2. 	Create the following component: 
 	
 ```java	
-@Component
+@ApplicationScoped
 public class CustomScheduler {
 
-	public CustomScheduler(TaskScheduler scheduler){
+	public CustomScheduler(TaskScheduler scheduler) {
 		scheduler.schedule(mytask.class, customTrigger(), taskId());
 	}
 }
@@ -116,7 +90,7 @@ public class MyTask implements Task {
 Tasks and Request Scope
 --------
 
-Tasks should only be scheduled using `@ApplicationScoped` or `@PrototypeScoped` scopes. 
+Tasks should only be scheduled using `@ApplicationScoped` or `@Dependent` scopes. 
 If your task depends on `@RequestScoped` components, you can annotate a method of your controller that will be invoked automatically.
 
 ```java
@@ -127,14 +101,10 @@ public class Component {
 	
 }
 
-@Resource
-public class Controller {
+@Controller
+public class TaskController {
 
-	private final Component component;
-	
-	public Controller(Component component) {
-		this.component = component;
-	}
+	private Component component;
 
     @Post @Scheduled(fixedRate = 5000)
 	public void execute() {
@@ -170,14 +140,10 @@ Controlling Tasks
 Ok, your tasks are scheduled, but sometimes you need control them manually. No problem:
 
 ```java	
-@Resource
+@Controller
 public class TaskController {
 	
 	private TaskExecutor executor;
-
-	TaskController(TaskExecutor executor){
-		this.executor = executor;
-	}
 	
 	@Path("task/{taskId}/execute")
 	void execute(String taskId){
@@ -207,16 +173,16 @@ public class TaskController {
 }
 ```
 
+
+
 Monitoring Tasks 
 --------
 ```java
-@Resource
+@Controller
 public class TasksController {
 
-	private final TasksMonitor monitor;
-	
-	@Path("task/{taskId}/stats")
-	public void statsFor(String taskId) {
+	@Get("task/{taskId}/stats")
+	public void statsFor(String taskId, TaskMonitor monitor) {
 		TaskStatistics stats = monitor.getStatisticsFor(taskId);
 		log.debug("Fire Time: {}", stats.getFireTime());
 		log.debug("Scheduled Fire Time: {}", stats.getScheduledFireTime());
@@ -230,32 +196,7 @@ public class TasksController {
 		log.debug("Fail Count: {}", stats.getFailCount());
 		log.debug("Last Fault: {}", stats.getLastException());
 	}
-}
-```	
 
-More information?
-
-```java
-@Component
-public class TaskEventLogger implements TaskCallback {
-
-	public void executed(String taskId, TaskStatistics stats){ ... }
-	
-	public void scheduled(String taskId, Trigger trigger){ ... }
-	
-	public void unscheduled(String taskId){ ... }
-	
-	public void failed(String taskId, TaskStatistics stats, Exception error){ ... }
-	
-	public void paused(String taskId){ ... }
-	
-	public void resumed(String taskId){ ... }
-	
-	public void beforeExecute(String taskId){ ... }
-	
-	public void executionVetoed(String taskId){ ... }
-	
-	...
 }
 ```	
 
@@ -264,7 +205,7 @@ Creating Custom Tasks
 
 To create custom tasks: 
 
-1.	Create an interface that extends `br.com.caelum.vraptor.tasks.Task`
+1) Create an interface that extends `br.com.caelum.vraptor.tasks.Task`
 
 ```java
 public interface InterruptableTask extends Task {
@@ -272,7 +213,7 @@ public interface InterruptableTask extends Task {
 }
 ```	
 
-2.	Create a class that decorate the execution of its task (must implement `org.quartz.Job`)
+2) Create a class that decorate the execution of its task (must implement `org.quartz.Job`)
 
 ```java
 public class InterruptableJobWrapper implements InterruptableJob {
@@ -293,10 +234,9 @@ public class InterruptableJobWrapper implements InterruptableJob {
 }
 ```
 
-3.	Create a class that provides its task (must implement `br.com.caelum.vraptor.tasks.jobs.JobProvider`)
+3) Create a class that provides its task (must implement `br.com.caelum.vraptor.tasks.jobs.JobProvider`)
 
 ```java
-@Component
 @ApplicationScoped
 public class InterruptableTaskProvider implements JobProvider {
 
@@ -323,7 +263,7 @@ public class InterruptableTaskProvider implements JobProvider {
 }
 ```
 
-4.	Now we are ready to do some cool task
+4) Now we are ready to do some cool task
 
 ```java
 @ApplicationScoped
@@ -348,7 +288,7 @@ public class RuntimeProcessTask implements InterruptableTask {
 
 License
 --------
-Copyright (c) 2011 William Pivotto
+Copyright (c) 2014 William Pivotto
 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
