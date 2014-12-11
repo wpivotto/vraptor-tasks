@@ -3,7 +3,9 @@ package br.com.caelum.vraptor.tasks.jobs.request;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
@@ -56,8 +58,8 @@ public class PendingTasks implements StereotypeHandler {
 		return entries.isEmpty();
 	}
 
-	public void remove(String key) {
-		entries.remove(key);
+	public Iterator<Entry<String, Method>> iterator() {
+		return entries.entrySet().iterator();
 	}
 
 }
