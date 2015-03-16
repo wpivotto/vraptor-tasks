@@ -22,8 +22,8 @@ public class TaskExecution {
 		return stats;
 	}
 
-	public Exception getException() {
-		return exception;
+	public Throwable getException() {
+		return stats.getRootCause();
 	}
 	
 	public boolean hasFailed() {

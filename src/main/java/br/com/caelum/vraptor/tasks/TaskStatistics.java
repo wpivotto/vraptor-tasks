@@ -192,16 +192,16 @@ public class TaskStatistics {
 
 	@Override
 	public String toString() {
-		return "[\nTask: " + getTask() + ",\n Trigger: " + getTriggerExpression()
-				+ ",\n Trigger State: " + getTriggerState() + ",\n Fire Time: " + getFireTime()
-				+ ",\n Scheduled Fire Time: " + getScheduledFireTime()
-				+ ",\n Next Fire Times: " + printNextEvents() + ",\n Previous Fire Time: "
-				+ getPreviousFireTime() + ",\n Execution Time: " + getExecutionTime()
-				+ ",\n Max Execution Time: " + getMaxExecutionTime()
-				+ ",\n Min Execution Time: " + getMinExecutionTime()
-				+ ",\n Execution Count: " + getExecutionCount() + ",\n Refire Count: "
-				+ getRefireCount() + ",\n Fail Count: " + getFailCount() + ",\n Last Exception: "
-				+ getLastException() + ",\n Parameters: " + printParameters() + "\n]";
+		return "[Task: " + getTask() + ", Trigger: " + getTriggerExpression()
+				+ ", Trigger State: " + getTriggerState() + ", Fire Time: " + getFireTime()
+				+ ", Scheduled Fire Time: " + getScheduledFireTime()
+				+ ", Next Fire Times: " + printNextEvents() + ", Previous Fire Time: "
+				+ getPreviousFireTime() + ", Execution Time: " + getExecutionTime()
+				+ ", Max Execution Time: " + getMaxExecutionTime()
+				+ ", Min Execution Time: " + getMinExecutionTime()
+				+ ", Execution Count: " + getExecutionCount() + ", Refire Count: "
+				+ getRefireCount() + ", Fail Count: " + getFailCount() + ", Last Exception: "
+				+ getRootCause() + ", Parameters: " + printParameters() + "]";
 	}
 
 }

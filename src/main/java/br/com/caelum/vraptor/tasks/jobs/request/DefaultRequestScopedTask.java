@@ -18,18 +18,25 @@ public class DefaultRequestScopedTask implements RequestScopedTask {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void execute() {
+		String uri = endpoint.toExternalForm();
+		logger.info("Executing task in URL " + uri);
+		HttpClient client = new HttpClient();
+		PostMethod post = new PostMethod(uri);
+		includeParams(post);
 
+		int statusCode = 0;
 		try {
-			String uri = endpoint.toExternalForm();
-			logger.info("Executing task in URL " + uri);
-			HttpClient client = new HttpClient();
-			PostMethod post = new PostMethod(uri);
-			includeParams(post);
-			int statusCode = client.executeMethod(post);
-			logger.info("Task returned status code " + statusCode);
+			statusCode = client.executeMethod(post);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		logger.info("Task returned status code " + statusCode);
+		if (!isOk(statusCode))
+			throw new RuntimeException("Task failed with status code " + statusCode);
+	}
+	
+	private boolean isOk(int statusCode) {
+		return statusCode >= 200 && statusCode <= 299;
 	}
 	
 	private PostMethod includeParams(PostMethod post) {
