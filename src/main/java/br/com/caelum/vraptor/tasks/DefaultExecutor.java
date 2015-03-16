@@ -1,6 +1,8 @@
 package br.com.caelum.vraptor.tasks;
 
-import javax.enterprise.context.ApplicationScoped;
+import java.lang.reflect.Method;
+
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.quartz.JobKey;
@@ -8,15 +10,21 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 
+import br.com.caelum.vraptor.proxy.MethodInvocation;
+import br.com.caelum.vraptor.proxy.Proxifier;
+import br.com.caelum.vraptor.proxy.SuperMethod;
 import br.com.caelum.vraptor.tasks.helpers.TriggerBuilder;
+import br.com.caelum.vraptor.tasks.jobs.request.DefaultRequestScopedTask;
 import br.com.caelum.vraptor.tasks.scheduler.TaskScheduler;
 
-@ApplicationScoped
+@RequestScoped
 public class DefaultExecutor implements TaskExecutor {
 
-	private @Inject Scheduler quartz;
-	private @Inject TaskScheduler scheduler;
-	private @Inject TriggerBuilder builder;
+	@Inject private Scheduler quartz;
+	@Inject private TaskScheduler scheduler;
+	@Inject private TriggerBuilder builder;
+	@Inject private Proxifier proxifier;
+	
 	
 	private JobKey getKey(String taskId){
 		return new JobKey(taskId);
@@ -43,8 +51,24 @@ public class DefaultExecutor implements TaskExecutor {
 	}
 
 	public void runOnce(Class<? extends Task> task) {
-		Trigger trigger = builder.runOnce(task);
+		Trigger trigger = builder.runOnce();
 		scheduler.schedule(task, trigger, task.getSimpleName());
 	}
+
+	public <T> T run(final Class<T> controller) {
+		return proxifier.proxify(controller, new MethodInvocation<T>() {
+			public Object intercept(T proxy, Method method, Object[] args, SuperMethod superMethod) {
+				Trigger trigger = builder.triggerFor(method, args);
+				scheduler.schedule(DefaultRequestScopedTask.class, trigger, builder.randomKey());
+				return null;
+			}
+		});
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T run(T controller) {
+		return (T) run(controller.getClass());
+	}
+	
 
 }

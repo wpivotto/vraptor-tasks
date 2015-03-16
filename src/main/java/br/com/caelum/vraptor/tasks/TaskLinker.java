@@ -2,26 +2,24 @@ package br.com.caelum.vraptor.tasks;
 
 import java.lang.reflect.Method;
 
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import br.com.caelum.vraptor.config.Configuration;
 import br.com.caelum.vraptor.http.route.Router;
 
-@Dependent
+@RequestScoped
 public class TaskLinker {
 
-	private final Router router;
-	private final Configuration cfg;
+	@Inject private Router router;
+	@Inject private Configuration cfg;
 	
-	@Inject
-	public TaskLinker(Router router, Configuration cfg) {
-		this.router = router;
-		this.cfg = cfg;
-	}
-
 	public String linkTo(Class<?> controller, Method method) {
-		String URI = router.urlFor(controller, method, new Object[method.getParameterTypes().length]);
+		return linkTo(controller, method, new Object[method.getParameterTypes().length]);
+	}
+	
+	public String linkTo(Class<?> controller, Method method, Object[] args) {
+		String URI = router.urlFor(controller, method, args);
 		if (URI.startsWith("/")) {
 			return cfg.getApplicationPath() + URI;
 		}
