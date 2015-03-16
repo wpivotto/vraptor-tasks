@@ -21,7 +21,7 @@ import com.google.common.collect.Maps;
 public class TasksMonitor implements JobListener {
 	
 	private Scheduler scheduler;
-	private Map<String, TaskStatistics> statistics = Maps.newHashMap();
+	private Map<String, TaskStatistics> statistics = Maps.newConcurrentMap();
 	@Inject @Any Event<TaskExecution> executionEvent;
 	
 	public void setScheduler(Scheduler scheduler) {

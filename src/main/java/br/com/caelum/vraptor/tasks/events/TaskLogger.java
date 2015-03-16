@@ -12,7 +12,7 @@ public class TaskLogger {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void executed(@Observes TaskExecution event) {
-		if (event.getException() != null) 
+		if (event.hasFailed()) 
 			logger.error("Task" + event.getTaskId() + " was failed", event.getException().getMessage());
 		else
 			logger.debug("Task {} was successfully executed", event.getTaskId());

@@ -42,7 +42,6 @@ public class TaskStatistics {
 		this.task = task;
 		this.trigger = context.getTrigger();
 		this.scheduledFireTime = trigger.getStartTime();
-		update(context, null, null);
 	}
 	
 	public String getTask() {
@@ -193,7 +192,7 @@ public class TaskStatistics {
 
 	@Override
 	public String toString() {
-		return "[Task: " + getTask() + ",\n Trigger: " + getTriggerExpression()
+		return "[\nTask: " + getTask() + ",\n Trigger: " + getTriggerExpression()
 				+ ",\n Trigger State: " + getTriggerState() + ",\n Fire Time: " + getFireTime()
 				+ ",\n Scheduled Fire Time: " + getScheduledFireTime()
 				+ ",\n Next Fire Times: " + printNextEvents() + ",\n Previous Fire Time: "
@@ -202,7 +201,7 @@ public class TaskStatistics {
 				+ ",\n Min Execution Time: " + getMinExecutionTime()
 				+ ",\n Execution Count: " + getExecutionCount() + ",\n Refire Count: "
 				+ getRefireCount() + ",\n Fail Count: " + getFailCount() + ",\n Last Exception: "
-				+ getLastException() + ",\n Parameters: " + printParameters() + "]";
+				+ getLastException() + ",\n Parameters: " + printParameters() + "\n]";
 	}
 
 }

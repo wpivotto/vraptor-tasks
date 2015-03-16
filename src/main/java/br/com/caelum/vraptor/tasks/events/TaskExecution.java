@@ -1,16 +1,14 @@
 package br.com.caelum.vraptor.tasks.events;
 
-import org.quartz.JobExecutionException;
-
 import br.com.caelum.vraptor.tasks.TaskStatistics;
 
 public class TaskExecution {
 
 	private final String taskId;
 	private final TaskStatistics stats;
-	private final JobExecutionException exception;
+	private final Exception exception;
 	
-	public TaskExecution(String taskId, TaskStatistics stats, JobExecutionException exception) {
+	public TaskExecution(String taskId, TaskStatistics stats, Exception exception) {
 		this.taskId = taskId;
 		this.stats = stats;
 		this.exception = exception;
@@ -24,8 +22,12 @@ public class TaskExecution {
 		return stats;
 	}
 
-	public JobExecutionException getException() {
+	public Exception getException() {
 		return exception;
+	}
+	
+	public boolean hasFailed() {
+		return exception != null;
 	}
 	
 }
