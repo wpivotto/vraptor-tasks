@@ -25,7 +25,7 @@ Installation
 <dependency>
   	<groupId>br.com.prixma</groupId>
   	<artifactId>vraptor-tasks</artifactId>
-  	<version>4.1.0</version>
+  	<version>4.2.0</version>
 </dependency>
 ```
 
