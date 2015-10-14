@@ -12,11 +12,15 @@ import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 public class RequestScopedJobProvider implements JobProvider {
 
 	public Job newJob(Task task, Scheduled options) {
-		return new RequestScopedJob((RequestScopedTask) task);
+		RequestScopedTask job = (RequestScopedTask) task;
+		if (options == null)
+			return new StatefulRequestScopedJob(job);
+		return options.concurrent() ? new ConcurrentRequestScopedJob(job) : new StatefulRequestScopedJob(job);
 	}
 
 	public boolean canProvide(Class<? extends Job> job) {
-		return RequestScopedJob.class.equals(job);
+		return ConcurrentRequestScopedJob.class.equals(job)
+				|| StatefulRequestScopedJob.class.equals(job);
 	}
 
 	public boolean canDecorate(Class<? extends Task> task) {
@@ -24,7 +28,9 @@ public class RequestScopedJobProvider implements JobProvider {
 	}
 
 	public Class<? extends Job> getJobWrapper(Scheduled options) {
-		return RequestScopedJob.class;
+		if (options == null)
+			return StatefulRequestScopedJob.class;
+		return options.concurrent() ? ConcurrentRequestScopedJob.class : StatefulRequestScopedJob.class;
 	}
 
 }

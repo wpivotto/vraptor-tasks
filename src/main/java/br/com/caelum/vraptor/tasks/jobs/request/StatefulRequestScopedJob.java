@@ -13,11 +13,11 @@ import br.com.caelum.vraptor.tasks.jobs.TaskExecutionException;
 
 @DisallowConcurrentExecution
 @PersistJobDataAfterExecution
-public class RequestScopedJob implements Job {
+public class StatefulRequestScopedJob implements Job {
 
 	private final RequestScopedTask task;
 	
-	public RequestScopedJob(RequestScopedTask task) {
+	public StatefulRequestScopedJob(RequestScopedTask task) {
 		this.task = task;
 	}
 
