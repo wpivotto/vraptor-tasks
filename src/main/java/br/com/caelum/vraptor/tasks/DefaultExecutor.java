@@ -14,7 +14,7 @@ import br.com.caelum.vraptor.proxy.MethodInvocation;
 import br.com.caelum.vraptor.proxy.Proxifier;
 import br.com.caelum.vraptor.proxy.SuperMethod;
 import br.com.caelum.vraptor.tasks.helpers.TriggerBuilder;
-import br.com.caelum.vraptor.tasks.jobs.request.DefaultRequestScopedTask;
+import br.com.caelum.vraptor.tasks.jobs.request.RequestScopedTask;
 import br.com.caelum.vraptor.tasks.scheduler.TaskScheduler;
 
 @RequestScoped
@@ -59,7 +59,7 @@ public class DefaultExecutor implements TaskExecutor {
 		return proxifier.proxify(controller, new MethodInvocation<T>() {
 			public Object intercept(T proxy, Method method, Object[] args, SuperMethod superMethod) {
 				Trigger trigger = builder.triggerFor(method, args);
-				scheduler.schedule(DefaultRequestScopedTask.class, trigger, builder.randomKey());
+				scheduler.schedule(RequestScopedTask.class, trigger, builder.randomKey());
 				return null;
 			}
 		});

@@ -26,7 +26,7 @@ public class SchedulerCreator {
 				scheduler.setJobFactory(factory);
 				scheduler.getListenerManager().addJobListener(monitor);
 				monitor.setScheduler(scheduler);
-				this.scheduler.startDelayed(5);
+				scheduler.startDelayed(5);
 			} catch (SchedulerException e) {
 				throw new RuntimeException(e);
 			}

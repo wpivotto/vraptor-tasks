@@ -5,6 +5,6 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class NullTask implements Task {
 
-	public void execute() {}
+	public void execute(TaskContext context) {}
 
 }

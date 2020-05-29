@@ -46,7 +46,7 @@ public class PendingTasksInterceptor {
 			try {
 				Method method = task.getValue();
 				Trigger trigger = builder.triggerFor(method);
-				scheduler.schedule(DefaultRequestScopedTask.class, trigger, task.getKey());
+				scheduler.schedule(RequestScopedTask.class, trigger, task.getKey());
 				tasks.remove();
 			} catch (Exception e) {
 				log.error("Can't schedule task", e);
