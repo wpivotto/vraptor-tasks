@@ -26,7 +26,8 @@ public class SchedulerCreator {
 				scheduler.setJobFactory(factory);
 				scheduler.getListenerManager().addJobListener(monitor);
 				monitor.setScheduler(scheduler);
-				scheduler.startDelayed(5);
+				scheduler.start();
+				logger.debug("Quartz started");
 			} catch (SchedulerException e) {
 				throw new RuntimeException(e);
 			}
