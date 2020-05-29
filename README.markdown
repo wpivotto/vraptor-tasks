@@ -3,6 +3,9 @@ Tasks
 
 Plug-in library of Quartz job scheduling for vraptor 
 
+
+*	For vraptor 3 use [this](https://github.com/wpivotto/vraptor-tasks-3) repo
+
 Installation 
 --------
 
@@ -25,7 +28,7 @@ Installation
 <dependency>
   	<groupId>br.com.prixma</groupId>
   	<artifactId>vraptor-tasks</artifactId>
-  	<version>4.3.0</version>
+  	<version>4.3.1</version>
 </dependency>
 ```
 
