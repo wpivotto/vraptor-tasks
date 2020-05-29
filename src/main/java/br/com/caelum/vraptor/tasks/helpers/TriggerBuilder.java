@@ -9,7 +9,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.quartz.JobDataMap;
@@ -22,7 +22,7 @@ import br.com.caelum.vraptor.tasks.Task;
 import br.com.caelum.vraptor.tasks.TaskLinker;
 import br.com.caelum.vraptor.tasks.scheduler.Scheduled;
 
-@RequestScoped
+@Dependent
 public class TriggerBuilder {
 	
 	@Inject private TaskLinker linker;
